@@ -1,0 +1,20 @@
+/* CareConcierge — global overrides. Tokens live in theme.json. */
+
+/* fonts/ — drop self-hosted licensed WOFF2 here when supplied; @font-face is wired up at that point */
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+:where(a) { text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+
+:where(a:focus-visible),
+:where(button:focus-visible),
+:where(input:focus-visible),
+:where(select:focus-visible),
+:where(textarea:focus-visible),
+:where([tabindex]:focus-visible) {
+	outline: 2px solid var(--wp--preset--color--ink-blue);
+	outline-offset: 2px;
+}
+
+.cc-audience-switcher p { margin: 0; }
