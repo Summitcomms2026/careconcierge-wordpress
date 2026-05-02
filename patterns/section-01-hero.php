@@ -11,12 +11,12 @@
 <section id="hero" class="wp-block-group cc-section cc-section--hero has-ink-blue-color has-eucalyptus-background-color has-text-color has-background">
 	<!-- wp:html -->
 	<div class="cc-hero-grid">
-		<div class="cc-hero-grid__main">
+		<div class="cc-hero-grid__main cc-reveal">
 			<h1 class="cc-hero-headline">The patient communication infrastructure for private elective practice.</h1>
 			<p class="cc-hero-subhead">Every enquiry answered. Every lead qualified. Every handoff ready on your desk &mdash; while you&rsquo;re in theatre.</p>
 			<a class="cc-button cc-button--primary cc-hero-cta" href="#walkthrough">Book a thirty-minute walkthrough <span aria-hidden="true">&rarr;</span></a>
 		</div>
-		<aside class="cc-system-signal" aria-label="System overview">
+		<aside class="cc-system-signal cc-reveal" aria-label="System overview">
 			<p class="cc-system-signal__label">System</p>
 			<ol class="cc-system-signal__list" role="list">
 				<li class="cc-system-signal__item"><span class="cc-system-signal__dot" aria-hidden="true"></span>Enquiry received</li>

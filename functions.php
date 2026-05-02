@@ -28,27 +28,62 @@ if ( ! function_exists( 'careconcierge_setup' ) ) {
 }
 add_action( 'after_setup_theme', 'careconcierge_setup' );
 
+if ( ! function_exists( 'careconcierge_asset_version' ) ) {
+	/**
+	 * mtime-based version for cache-busting during active development.
+	 * Falls back to theme version on any read failure.
+	 */
+	function careconcierge_asset_version( $relative_path ) {
+		$full = get_template_directory() . '/' . ltrim( $relative_path, '/' );
+		$mtime = @filemtime( $full );
+		if ( $mtime ) {
+			return (string) $mtime;
+		}
+		return wp_get_theme()->get( 'Version' );
+	}
+}
+
 if ( ! function_exists( 'careconcierge_enqueue_assets' ) ) {
 	function careconcierge_enqueue_assets() {
-		$theme_version = wp_get_theme()->get( 'Version' );
+		// Adobe Fonts (Typekit). Loaded first so font-family declarations resolve when main.css parses.
+		wp_enqueue_style(
+			'careconcierge-typekit',
+			'https://use.typekit.net/jyc4lck.css',
+			array(),
+			null
+		);
 
 		wp_enqueue_style(
 			'careconcierge-main',
 			get_template_directory_uri() . '/assets/css/main.css',
-			array(),
-			$theme_version
+			array( 'careconcierge-typekit' ),
+			careconcierge_asset_version( 'assets/css/main.css' )
 		);
 
 		wp_enqueue_script(
 			'careconcierge-main',
 			get_template_directory_uri() . '/assets/js/main.js',
 			array(),
-			$theme_version,
+			careconcierge_asset_version( 'assets/js/main.js' ),
 			true
 		);
 	}
 }
 add_action( 'wp_enqueue_scripts', 'careconcierge_enqueue_assets' );
+
+/**
+ * Preconnect Adobe Fonts hosts to shave round-trip cost.
+ */
+if ( ! function_exists( 'careconcierge_resource_hints' ) ) {
+	function careconcierge_resource_hints( $urls, $relation_type ) {
+		if ( 'preconnect' === $relation_type ) {
+			$urls[] = array( 'href' => 'https://use.typekit.net', 'crossorigin' );
+			$urls[] = array( 'href' => 'https://p.typekit.net',   'crossorigin' );
+		}
+		return $urls;
+	}
+}
+add_filter( 'wp_resource_hints', 'careconcierge_resource_hints', 10, 2 );
 
 /**
  * Active audience vertical for the request.

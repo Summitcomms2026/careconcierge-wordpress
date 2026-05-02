@@ -10,7 +10,7 @@
 <!-- wp:group {"tagName":"section","className":"cc-section cc-section--investment","backgroundColor":"ink-blue","textColor":"cloud-white","layout":{"type":"constrained","contentSize":"100%","wideSize":"100%"}} -->
 <section id="investment" class="wp-block-group cc-section cc-section--investment has-cloud-white-color has-ink-blue-background-color has-text-color has-background">
 	<!-- wp:html -->
-	<div class="cc-invest">
+	<div class="cc-invest cc-reveal">
 		<p class="cc-eyebrow cc-eyebrow--on-dark">Investment</p>
 		<h2>From A$2,950 / £1,450 per month.</h2>
 		<p class="cc-invest__copy">Three tiers: Practice (anchor), Growth (the primary offer), Elite (high-volume or multi-site). Twelve-month engagements. Setup fees and inclusions detailed in the engagement order.</p>

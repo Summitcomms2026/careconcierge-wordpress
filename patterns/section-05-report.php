@@ -11,15 +11,16 @@
 <section id="report" class="wp-block-group cc-section cc-section--report has-ink-blue-color has-soft-feather-background-color has-text-color has-background">
 	<!-- wp:html -->
 	<div class="cc-report-grid">
-		<div class="cc-report-text">
+		<div class="cc-report-text cc-reveal">
 			<p class="cc-eyebrow">The Conversion Intelligence Report</p>
 			<h2>You are not buying software. You are buying the report.</h2>
 			<p>A monthly document, not a dashboard. Eight pages. Plain English. Delivered to the principal.</p>
 			<p class="cc-report-supporting">Most coordinators report on activity. The Conversion Intelligence Report names outcomes &mdash; so a principal who has never logged in still knows, monthly, exactly what the platform is doing for the practice.</p>
-			<a class="cc-button cc-button--ghost" href="#walkthrough">See a sample report <span aria-hidden="true">&rarr;</span></a>
+			<?php /* TODO: drop the actual eight-page sample PDF at /sample-report.pdf in WP uploads or theme root once the file is supplied. Until then this 404s gracefully. */ ?>
+			<a class="cc-button cc-button--ghost" href="/sample-report.pdf" target="_blank" rel="noopener">See a sample report <span aria-hidden="true">&rarr;</span></a>
 		</div>
 
-		<aside class="cc-report-artifact" aria-label="Sample monthly report">
+		<aside class="cc-report-artifact cc-reveal" aria-label="Sample monthly report">
 			<header class="cc-report-artifact__masthead">
 				<p class="cc-report-artifact__name">Conversion Intelligence Report</p>
 				<p class="cc-report-artifact__date">Monthly · Sample</p>

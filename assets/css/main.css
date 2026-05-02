@@ -84,11 +84,13 @@ body.admin-bar { --cc-admin-h: 32px; scroll-padding-top: calc(var(--cc-header-h)
 	display: flex;
 	align-items: center;
 	padding: 0 var(--cc-content-x) !important;
-	background-color: rgba(229, 232, 228, 0.85) !important;
-	backdrop-filter: saturate(140%) blur(10px);
-	-webkit-backdrop-filter: saturate(140%) blur(10px);
-	border-bottom: 1px solid rgba(27, 42, 86, 0.08);
-	transition: background-color 200ms ease, border-color 200ms ease;
+	background-color: rgba(229, 232, 228, 0.72) !important;
+	backdrop-filter: saturate(160%) blur(14px);
+	-webkit-backdrop-filter: saturate(160%) blur(14px);
+	border-bottom: 1px solid rgba(27, 42, 86, 0.04);
+	transition: background-color 280ms cubic-bezier(0.16, 1, 0.3, 1),
+				border-color 280ms ease,
+				min-height 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 
@@ -99,14 +101,15 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 }
 
 .cc-wordmark {
-	font-family: var(--wp--preset--font-family--sans);
-	font-weight: 600;
-	font-size: 0.875rem;
-	letter-spacing: 0.16em;
+	font-family: var(--wp--preset--font-family--wordmark);
+	font-weight: 700;
+	font-size: 0.95rem;
+	letter-spacing: 0.18em;
 	color: var(--wp--preset--color--ink-blue);
 	text-decoration: none;
 	text-transform: uppercase;
 	white-space: nowrap;
+	transition: opacity 160ms ease;
 }
 .cc-wordmark:hover { text-decoration: none; opacity: 0.8; }
 
@@ -187,14 +190,15 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 .cc-eyebrow {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.7rem;
-	font-family: var(--wp--preset--font-family--sans);
-	font-size: 0.6875rem;
-	font-weight: 600;
-	letter-spacing: 0.2em;
+	gap: 0.75rem;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.625rem;
+	font-weight: 500;
+	letter-spacing: 0.24em;
 	text-transform: uppercase;
 	color: var(--wp--preset--color--ink-blue);
-	margin: 0 0 1.25rem;
+	opacity: 0.72;
+	margin: 0 0 1.85rem;
 	background: transparent;
 	padding: 0;
 	line-height: 1;
@@ -205,10 +209,11 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 	width: 1.5rem;
 	height: 1px;
 	background: currentColor;
-	opacity: 0.45;
+	opacity: 0.6;
 }
 .cc-eyebrow--on-dark {
 	color: var(--wp--preset--color--eucalyptus);
+	opacity: 0.85;
 }
 
 /* Headings — global tightening when used in sections */
@@ -227,23 +232,40 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 .cc-button {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.5rem;
-	padding: 0.85rem 1.35rem;
-	font-family: var(--wp--preset--font-family--sans);
-	font-size: 0.875rem;
-	font-weight: 600;
-	letter-spacing: 0.02em;
+	gap: 1rem;
+	padding: 0 1.85rem;
+	min-height: 56px;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	letter-spacing: 0.005em;
 	text-decoration: none;
-	border-radius: 999px;
-	transition: transform 120ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+	border-radius: 12px;
+	transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+				background 220ms ease,
+				color 220ms ease,
+				border-color 220ms ease,
+				box-shadow 320ms cubic-bezier(0.16, 1, 0.3, 1),
+				opacity 160ms ease;
 	border: 1px solid transparent;
 	white-space: nowrap;
 	line-height: 1;
 }
 .cc-button:hover { transform: translateY(-1px); text-decoration: none; }
 .cc-button:active { transform: translateY(0); }
-.cc-button > span { display: inline-block; transition: transform 120ms ease; font-size: 0.95em; }
-.cc-button:hover > span { transform: translateX(2px); }
+.cc-button > span {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.4rem;
+	height: 1.4rem;
+	font-size: 1.1em;
+	transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-button:hover > span { transform: translateX(3px); }
+@media (max-width: 640px) {
+	.cc-button { min-height: 52px; padding: 0 1.5rem; font-size: 0.9rem; }
+}
 
 .cc-button--primary {
 	background: var(--wp--preset--color--ink-blue);
@@ -1083,3 +1105,419 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 @media (max-width: 768px) {
 	.cc-footer-grid { grid-template-columns: 1fr; }
 }
+
+/* ================================================================
+   PHASE 3 — Functionality, Typekit, motion discipline
+================================================================ */
+
+/* ----------------------------------------------------------------
+   Scrolled header state — set by JS via body.cc-is-scrolled
+---------------------------------------------------------------- */
+:root { --cc-header-h-scrolled: 3.25rem; }
+
+body.cc-is-scrolled .cc-site-header {
+	min-height: var(--cc-header-h-scrolled);
+	background-color: rgba(229, 232, 228, 0.94) !important;
+	backdrop-filter: saturate(180%) blur(20px);
+	-webkit-backdrop-filter: saturate(180%) blur(20px);
+	border-bottom-color: rgba(27, 42, 86, 0.09);
+}
+body.cc-is-scrolled .cc-wordmark {
+	font-size: 0.85rem;
+	letter-spacing: 0.17em;
+}
+body.cc-is-scrolled .cc-audience-switcher {
+	font-size: 0.625rem;
+}
+@media (prefers-reduced-motion: reduce) {
+	.cc-site-header,
+	.cc-wordmark,
+	.cc-audience-switcher { transition: none; }
+}
+.cc-wordmark,
+.cc-audience-switcher { transition: font-size 200ms ease, letter-spacing 200ms ease; }
+
+/* ----------------------------------------------------------------
+   Side section nav — fixed-positioned right-edge anchor nav
+   Visible on desktop only; fades in once user scrolls past the hero.
+---------------------------------------------------------------- */
+.cc-sidenav {
+	position: fixed;
+	right: 1.25rem;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 40;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 320ms cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+body.admin-bar .cc-sidenav { top: calc(50% + (var(--cc-admin-h, 0px) / 2)); }
+
+body.cc-is-past-hero .cc-sidenav {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.cc-sidenav__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 1.05rem;
+}
+
+.cc-sidenav__item { margin: 0; padding: 0; }
+
+.cc-sidenav__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.85rem;
+	color: rgba(27, 42, 86, 0.55);
+	text-decoration: none;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	line-height: 1;
+	padding: 0.2rem 0;
+	transition: color 220ms ease;
+}
+.cc-sidenav__link:hover {
+	color: var(--wp--preset--color--ink-blue);
+	text-decoration: none;
+}
+
+/* Label first in flow so dots stay locked at the right edge.
+   Width is reserved permanently so hover/active never reflows the nav. */
+.cc-sidenav__label {
+	display: inline-block;
+	width: 6.25rem;
+	text-align: right;
+	white-space: nowrap;
+	opacity: 0;
+	transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-sidenav__num {
+	display: inline-block;
+	min-width: 1.3rem;
+	font-size: 0.6rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	color: rgba(27, 42, 86, 0.35);
+	text-align: right;
+	transition: color 220ms ease;
+}
+.cc-sidenav__dot {
+	width: 0.4rem;
+	height: 0.4rem;
+	border-radius: 50%;
+	background: rgba(27, 42, 86, 0.3);
+	flex-shrink: 0;
+	transition: background 220ms ease, transform 220ms ease;
+}
+
+.cc-sidenav:hover .cc-sidenav__label,
+.cc-sidenav__link:focus-visible .cc-sidenav__label,
+.cc-sidenav__link.is-active .cc-sidenav__label {
+	opacity: 1;
+}
+
+.cc-sidenav__link.is-active {
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-sidenav__link.is-active .cc-sidenav__num {
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-sidenav__link.is-active .cc-sidenav__dot {
+	background: var(--wp--preset--color--ink-blue);
+	transform: scale(1.35);
+}
+
+/* On dark sections (Intelligence, Investment) the nav inverts for legibility */
+body.cc-section-active--intelligence .cc-sidenav__link,
+body.cc-section-active--investment .cc-sidenav__link {
+	color: rgba(229, 232, 228, 0.45);
+}
+body.cc-section-active--intelligence .cc-sidenav__link.is-active,
+body.cc-section-active--investment .cc-sidenav__link.is-active {
+	color: var(--wp--preset--color--cloud-white);
+}
+body.cc-section-active--intelligence .cc-sidenav__num,
+body.cc-section-active--investment .cc-sidenav__num {
+	color: rgba(229, 232, 228, 0.35);
+}
+body.cc-section-active--intelligence .cc-sidenav__link.is-active .cc-sidenav__num,
+body.cc-section-active--investment .cc-sidenav__link.is-active .cc-sidenav__num {
+	color: var(--wp--preset--color--cloud-white);
+}
+body.cc-section-active--intelligence .cc-sidenav__dot,
+body.cc-section-active--investment .cc-sidenav__dot {
+	background: rgba(229, 232, 228, 0.3);
+}
+body.cc-section-active--intelligence .cc-sidenav__link.is-active .cc-sidenav__dot,
+body.cc-section-active--investment .cc-sidenav__link.is-active .cc-sidenav__dot {
+	background: var(--wp--preset--color--cloud-white);
+}
+
+/* Hide on touch / narrow viewports — nav is supplemental, not essential */
+@media (max-width: 1100px) {
+	.cc-sidenav { display: none; }
+}
+
+/* ----------------------------------------------------------------
+   Reveal classes — IntersectionObserver triggers .is-visible
+---------------------------------------------------------------- */
+.cc-reveal {
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity 880ms cubic-bezier(0.16, 1, 0.3, 1),
+				transform 880ms cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: opacity, transform;
+}
+.cc-reveal.is-visible {
+	opacity: 1;
+	transform: none;
+}
+
+/* Stagger inside groups — subtler, less mechanical */
+.cc-reveal-group .cc-reveal { transition-delay: 0ms; }
+.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 60ms; }
+.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 120ms; }
+.cc-reveal-group .cc-reveal:nth-child(4) { transition-delay: 180ms; }
+.cc-reveal-group .cc-reveal:nth-child(5) { transition-delay: 240ms; }
+
+@media (prefers-reduced-motion: reduce) {
+	.cc-reveal,
+	.cc-reveal.is-visible,
+	.cc-reveal-group .cc-reveal {
+		opacity: 1 !important;
+		transform: none !important;
+		transition: none !important;
+	}
+}
+
+/* No-JS / IO unavailable: assume visible (handled in JS by class on <html> if needed) */
+.no-js .cc-reveal { opacity: 1; transform: none; }
+
+/* Modern fallback when JavaScript is disabled — show all reveals immediately. */
+@media (scripting: none) {
+	.cc-reveal,
+	.cc-reveal-group .cc-reveal {
+		opacity: 1 !important;
+		transform: none !important;
+		transition: none !important;
+	}
+	.cc-sidenav { display: none !important; }
+}
+
+/* ----------------------------------------------------------------
+   Plush hover behaviours
+---------------------------------------------------------------- */
+.cc-button {
+	transition: transform 180ms cubic-bezier(0.2, 0.6, 0.2, 1),
+				background 180ms ease,
+				color 180ms ease,
+				border-color 180ms ease,
+				box-shadow 240ms ease,
+				opacity 120ms ease;
+}
+.cc-button:hover { transform: translateY(-2px); }
+.cc-button--primary:hover { box-shadow: 0 12px 24px -12px rgba(27, 42, 86, 0.45); }
+.cc-button--ghost:hover  { box-shadow: 0 12px 24px -12px rgba(27, 42, 86, 0.25); }
+.cc-button--on-dark:hover { box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.35); }
+
+/* Card-class hover lifts */
+.cc-proof-panel,
+.cc-report-artifact,
+.cc-compare__col--brand,
+.cc-step,
+.cc-rail__step {
+	transition: transform 280ms cubic-bezier(0.2, 0.6, 0.2, 1),
+				box-shadow 320ms ease;
+}
+.cc-proof-panel:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 18px 32px -20px rgba(27, 42, 86, 0.18);
+}
+.cc-report-artifact:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 36px 56px -28px rgba(27, 42, 86, 0.32);
+}
+.cc-compare__col--brand:hover {
+	transform: translateY(-2px);
+}
+
+/* ----------------------------------------------------------------
+   System signal — quiet pulse on the active dot
+   Pulses the LAST dot (consultation booked) as the "live" tail.
+---------------------------------------------------------------- */
+.cc-system-signal__list .cc-system-signal__item:last-child .cc-system-signal__dot {
+	position: relative;
+}
+.cc-system-signal__list .cc-system-signal__item:last-child .cc-system-signal__dot::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: var(--wp--preset--color--ink-blue);
+	opacity: 0.5;
+	animation: cc-pulse 2.4s cubic-bezier(0.2, 0.6, 0.2, 1) infinite;
+}
+@keyframes cc-pulse {
+	0%   { transform: scale(1);   opacity: 0.5; }
+	70%  { transform: scale(2.6); opacity: 0;   }
+	100% { transform: scale(2.6); opacity: 0;   }
+}
+@media (prefers-reduced-motion: reduce) {
+	.cc-system-signal__list .cc-system-signal__item:last-child .cc-system-signal__dot::after {
+		animation: none;
+		display: none;
+	}
+}
+
+/* ----------------------------------------------------------------
+   Section divider hairlines — keep adjacent same-tone sections distinct
+---------------------------------------------------------------- */
+/* (already declared above for solution; kept here as a single source of truth) */
+
+
+/* ================================================================
+   PHASE 3A — Image placeholder system + refined regulator panel
+================================================================ */
+
+/* ----------------------------------------------------------------
+   Image placeholders — designed slots ready for supplied imagery
+   Replace the .cc-img-ph div with <img class="cc-img"> when supplied.
+---------------------------------------------------------------- */
+.cc-img-ph {
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-start;
+	background: var(--wp--preset--color--soft-cloud);
+	border: 1px solid rgba(27, 42, 86, 0.06);
+	border-radius: 4px;
+	overflow: hidden;
+	color: rgba(27, 42, 86, 0.55);
+}
+.cc-img-ph::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(180deg, rgba(27, 42, 86, 0.04) 0%, rgba(27, 42, 86, 0.10) 100%),
+		linear-gradient(135deg, rgba(127, 192, 172, 0.20) 0%, rgba(216, 206, 185, 0.22) 100%);
+	pointer-events: none;
+}
+.cc-img-ph::after {
+	/* fine cross-hatch hint that this is a placeholder, not a missing image */
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image:
+		linear-gradient(45deg, rgba(27, 42, 86, 0.04) 25%, transparent 25%),
+		linear-gradient(-45deg, rgba(27, 42, 86, 0.04) 25%, transparent 25%);
+	background-size: 14px 14px;
+	background-position: 0 0, 7px 7px;
+	opacity: 0.35;
+	pointer-events: none;
+}
+.cc-img-ph__caption {
+	position: relative;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.625rem;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	font-weight: 600;
+	color: rgba(27, 42, 86, 0.55);
+	padding: 0.85rem 1rem;
+	max-width: 80%;
+	line-height: 1.4;
+}
+
+.cc-img-ph--portrait  { aspect-ratio: 4 / 5; }
+.cc-img-ph--square    { aspect-ratio: 1 / 1; }
+.cc-img-ph--landscape { aspect-ratio: 16 / 9; }
+.cc-img-ph--strip     { aspect-ratio: 24 / 7; }
+
+/* Tonal variants for breaking the page rhythm */
+.cc-img-ph--ink {
+	background: var(--wp--preset--color--ink-blue);
+	color: rgba(229, 232, 228, 0.7);
+	border-color: rgba(255, 255, 255, 0.06);
+}
+.cc-img-ph--ink::before {
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.06) 100%),
+		linear-gradient(135deg, rgba(127, 192, 172, 0.10) 0%, rgba(216, 206, 185, 0.08) 100%);
+}
+.cc-img-ph--ink::after {
+	background-image:
+		linear-gradient(45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+		linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%);
+}
+.cc-img-ph--ink .cc-img-ph__caption { color: rgba(229, 232, 228, 0.65); }
+
+.cc-img-ph--feather {
+	background: var(--wp--preset--color--soft-feather);
+}
+.cc-img-ph--eucalyptus {
+	background: var(--wp--preset--color--eucalyptus);
+}
+.cc-img-ph--eucalyptus .cc-img-ph__caption { color: var(--wp--preset--color--ink-blue); opacity: 0.6; }
+
+/* ----------------------------------------------------------------
+   Opportunity layout — 2-column with right column stacking image + proof
+---------------------------------------------------------------- */
+.cc-opportunity-aside {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+/* ----------------------------------------------------------------
+   Refined regulator panel
+---------------------------------------------------------------- */
+.cc-proof-panel__heading {
+	font-size: 0.95rem;
+	line-height: 1.45;
+	font-weight: 500;
+	color: var(--wp--preset--color--ink-blue);
+	margin: 0 0 1.1rem;
+	font-family: var(--wp--preset--font-family--display);
+}
+.cc-proof-panel__disclaimer {
+	margin: 0.85rem 0 0;
+	padding-top: 0.75rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.08);
+	font-size: 0.6875rem;
+	line-height: 1.55;
+	color: rgba(27, 42, 86, 0.55);
+}
+
+/* ----------------------------------------------------------------
+   Solution image strip — wide tonal band between rail and guarantee
+---------------------------------------------------------------- */
+.cc-solution-strip {
+	max-width: 1180px;
+	margin: 3rem auto 0;
+}
+
+/* ----------------------------------------------------------------
+   Walkthrough split — image placeholder beside Cal.com placeholder
+---------------------------------------------------------------- */
+.cc-walk-split {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.25rem;
+	margin-top: 1.5rem;
+}
+.cc-walk-split .cc-img-ph { height: 100%; }
+.cc-walk-split .cc-cal-placeholder { margin-top: 0; height: 100%; }
+@media (max-width: 768px) {
+	.cc-walk-split { grid-template-columns: 1fr; }
+}
+

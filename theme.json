@@ -33,12 +33,17 @@
 				{
 					"slug": "sans",
 					"name": "Sans",
-					"fontFamily": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+					"fontFamily": "\"neue-haas-grotesk-text\", \"Inter\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
 				},
 				{
-					"slug": "serif",
-					"name": "Serif",
-					"fontFamily": "ui-serif, Georgia, \"Times New Roman\", serif"
+					"slug": "display",
+					"name": "Display",
+					"fontFamily": "\"neue-haas-grotesk-display\", \"Inter\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+				},
+				{
+					"slug": "wordmark",
+					"name": "Wordmark",
+					"fontFamily": "\"nexa\", \"neue-haas-grotesk-display\", system-ui, -apple-system, sans-serif"
 				}
 			],
 			"fontSizes": [
@@ -97,7 +102,7 @@
 			},
 			"h1": {
 				"typography": {
-					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontFamily": "var(--wp--preset--font-family--display)",
 					"fontSize":   "var(--wp--preset--font-size--h1)",
 					"fontWeight": "600",
 					"lineHeight": "1.1",
@@ -107,7 +112,7 @@
 			},
 			"h2": {
 				"typography": {
-					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontFamily": "var(--wp--preset--font-family--display)",
 					"fontSize":   "var(--wp--preset--font-size--h2)",
 					"fontWeight": "600",
 					"lineHeight": "1.15",
@@ -117,7 +122,7 @@
 			},
 			"h3": {
 				"typography": {
-					"fontFamily": "var(--wp--preset--font-family--sans)",
+					"fontFamily": "var(--wp--preset--font-family--display)",
 					"fontSize":   "var(--wp--preset--font-size--h3)",
 					"fontWeight": "600",
 					"lineHeight": "1.25"
