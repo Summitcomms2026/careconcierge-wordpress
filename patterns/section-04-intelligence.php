@@ -3,7 +3,7 @@
  * Title: Section 04 — The Intelligence Question
  * Slug: careconcierge/section-04-intelligence
  * Categories: careconcierge
- * Description: Chatbot vs CareConcierge compare on Ink Blue. Improved card legibility; clinical-guardrail coda.
+ * Description: Chatbot vs CareConcierge compare on Ink Blue. Category kill-shot with controlled supporting copy.
  * Inserter: yes
  */
 ?>
@@ -12,28 +12,29 @@
 	<!-- wp:html -->
 	<div class="cc-intel-intro cc-reveal">
 		<p class="cc-eyebrow cc-eyebrow--on-dark">The Intelligence Question</p>
-		<h2>Isn&rsquo;t this just a chatbot?</h2>
-		<p>It is the first question every surgeon asks. It is the right one.</p>
+		<h2>&ldquo;Isn&rsquo;t this just a chatbot?&rdquo;</h2>
+		<p>It is the first question every surgeon asks. It is also the right one.</p>
 	</div>
 
 	<div class="cc-compare cc-reveal-group">
 		<article class="cc-compare__col cc-compare__col--muted cc-reveal">
-			<p class="cc-compare__label">A chatbot</p>
+			<p class="cc-compare__label">A Chatbot</p>
 			<h3 class="cc-compare__title">is a decision tree.</h3>
-			<p class="cc-compare__body">Scripted paths. Scripted answers. If a patient asks something outside the designed route, they hit a wall. The conversation ends. The lead is gone.</p>
-			<p class="cc-compare__tag">Optimised to deflect. Feels like an FAQ page that talks.</p>
+			<p class="cc-compare__body">Scripted paths. Scripted answers. A patient asks the wrong thing, presses the wrong option, or moves outside the expected route &mdash; the wall appears. The conversation stops. The lead cools.</p>
+			<p class="cc-compare__tag">Optimised to deflect. Useful for FAQs. Weak where judgement is required.</p>
 		</article>
 		<article class="cc-compare__col cc-compare__col--brand cc-reveal">
 			<p class="cc-compare__label">CareConcierge</p>
 			<h3 class="cc-compare__title">is a conversational agent.</h3>
-			<p class="cc-compare__body">It has one goal: booking a consultation. Everything else serves that. If a patient goes off-script, it answers and steers them forward. The conversation never hits a wall.</p>
-			<p class="cc-compare__tag">Optimised to convert. Feels like your best coordinator. At eleven o&rsquo;clock on a Sunday night.</p>
+			<p class="cc-compare__body">It responds in natural language, stays within approved content, qualifies intent, and moves the patient toward a proper human handoff. It is built to support consultation booking without speculating, overselling, or wandering beyond the rules.</p>
+			<p class="cc-compare__tag">Optimised to protect value. Designed for the realities of private practice.</p>
 		</article>
 	</div>
 
 	<div class="cc-intel-coda cc-reveal">
 		<h3>The guardrails are clinical, not conversational.</h3>
-		<p>Every response is built from your regulator-reviewed practice content. CareConcierge will never speculate about surgical outcomes, quote fees out of context, or use restricted language. The intelligence is real. The compliance is absolute.</p>
+		<p>Every response is built from your practice content, reviewed boundaries, and regulator-aware messaging. CareConcierge does not improvise outcomes, quote fees carelessly, or make promises your team would not make themselves.</p>
+		<p>The intelligence is not theatrical. It is controlled.</p>
 	</div>
 	<!-- /wp:html -->
 </section>

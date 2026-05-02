@@ -75,8 +75,23 @@ body.admin-bar { --cc-admin-h: 32px; scroll-padding-top: calc(var(--cc-header-h)
 
 /* ----------------------------------------------------------------
    Site header — sticky, audience switcher
+   Sticky is applied to the WordPress template-part wrapper so the
+   header persists for the entire page scroll. The inner .cc-site-header
+   carries the visual treatment.
 ---------------------------------------------------------------- */
+header.wp-block-template-part {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	background: transparent;
+}
+body.admin-bar header.wp-block-template-part { top: var(--cc-admin-h, 0); }
+
+/* Defensive: prevent any ancestor overflow:hidden from breaking sticky */
+html, body { overflow-x: clip; overflow-y: visible; }
+
 .cc-site-header {
+	/* Sticky also declared on the inner element as a defensive fallback. */
 	position: sticky;
 	top: 0;
 	z-index: 50;
@@ -232,15 +247,15 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 .cc-button {
 	display: inline-flex;
 	align-items: center;
-	gap: 1rem;
-	padding: 0 1.85rem;
-	min-height: 56px;
+	gap: 1.1rem;
+	padding: 0 2rem;
+	min-height: 60px;
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 0.9375rem;
 	font-weight: 500;
 	letter-spacing: 0.005em;
 	text-decoration: none;
-	border-radius: 12px;
+	border-radius: 10px;
 	transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
 				background 220ms ease,
 				color 220ms ease,
@@ -1039,11 +1054,21 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 }
 
 .cc-walk__email {
-	font-size: 0.8125rem;
+	font-size: 0.875rem;
 	color: var(--wp--preset--color--mute);
-	margin: 1rem 0 0;
+	margin: 1.85rem 0 0;
+	padding-top: 1.25rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.08);
+	max-width: 56ch;
 }
-.cc-walk__email a { color: var(--wp--preset--color--ink-blue); }
+.cc-walk__email a {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom: 1px solid rgba(27, 42, 86, 0.3);
+	text-decoration: none;
+	padding-bottom: 1px;
+	transition: border-color 200ms ease;
+}
+.cc-walk__email a:hover { border-bottom-color: var(--wp--preset--color--ink-blue); }
 
 /* ----------------------------------------------------------------
    Footer composition
@@ -1143,7 +1168,7 @@ body.cc-is-scrolled .cc-audience-switcher {
 ---------------------------------------------------------------- */
 .cc-sidenav {
 	position: fixed;
-	right: 1.25rem;
+	right: clamp(1.5rem, 2.5vw, 2.5rem);
 	top: 50%;
 	transform: translateY(-50%);
 	z-index: 40;
@@ -1174,7 +1199,7 @@ body.cc-is-past-hero .cc-sidenav {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.85rem;
-	color: rgba(27, 42, 86, 0.55);
+	color: rgba(27, 42, 86, 0.32);
 	text-decoration: none;
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 0.6875rem;
@@ -1206,7 +1231,7 @@ body.cc-is-past-hero .cc-sidenav {
 	font-size: 0.6rem;
 	font-weight: 600;
 	letter-spacing: 0.1em;
-	color: rgba(27, 42, 86, 0.35);
+	color: rgba(27, 42, 86, 0.22);
 	text-align: right;
 	transition: color 220ms ease;
 }
@@ -1214,7 +1239,7 @@ body.cc-is-past-hero .cc-sidenav {
 	width: 0.4rem;
 	height: 0.4rem;
 	border-radius: 50%;
-	background: rgba(27, 42, 86, 0.3);
+	background: rgba(27, 42, 86, 0.22);
 	flex-shrink: 0;
 	transition: background 220ms ease, transform 220ms ease;
 }
@@ -1262,8 +1287,8 @@ body.cc-section-active--investment .cc-sidenav__link.is-active .cc-sidenav__dot 
 	background: var(--wp--preset--color--cloud-white);
 }
 
-/* Hide on touch / narrow viewports — nav is supplemental, not essential */
-@media (max-width: 1100px) {
+/* Hide on tablet & narrower — nav is supplemental, not essential */
+@media (max-width: 1200px) {
 	.cc-sidenav { display: none; }
 }
 
@@ -1442,6 +1467,8 @@ body.cc-section-active--investment .cc-sidenav__link.is-active .cc-sidenav__dot 
 .cc-img-ph--square    { aspect-ratio: 1 / 1; }
 .cc-img-ph--landscape { aspect-ratio: 16 / 9; }
 .cc-img-ph--strip     { aspect-ratio: 24 / 7; }
+/* Fill the parent height (used in flex/grid contexts where aspect-ratio would constrain). */
+.cc-img-ph--fill      { aspect-ratio: auto; min-height: 240px; height: 100%; }
 
 /* Tonal variants for breaking the page rhythm */
 .cc-img-ph--ink {
@@ -1475,7 +1502,7 @@ body.cc-section-active--investment .cc-sidenav__link.is-active .cc-sidenav__dot 
 .cc-opportunity-aside {
 	display: flex;
 	flex-direction: column;
-	gap: 1.25rem;
+	gap: 1.85rem;
 }
 
 /* ----------------------------------------------------------------
@@ -1513,11 +1540,171 @@ body.cc-section-active--investment .cc-sidenav__link.is-active .cc-sidenav__dot 
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 1.25rem;
-	margin-top: 1.5rem;
+	margin-top: 2rem;
+	align-items: stretch;
 }
-.cc-walk-split .cc-img-ph { height: 100%; }
-.cc-walk-split .cc-cal-placeholder { margin-top: 0; height: 100%; }
+.cc-walk-split > * { min-height: 280px; }
+.cc-walk-split .cc-img-ph { height: 100%; aspect-ratio: auto; }
+.cc-walk-split .cc-cal-placeholder {
+	margin-top: 0;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
 @media (max-width: 768px) {
 	.cc-walk-split { grid-template-columns: 1fr; }
+	.cc-walk-split > * { min-height: 200px; }
+}
+
+
+/* ================================================================
+   PHASE 4 — Editorial heat, hero qualifier, report-as-proof-object
+================================================================ */
+
+/* ----------------------------------------------------------------
+   Hero qualifier — small caps line beneath the CTA
+---------------------------------------------------------------- */
+.cc-hero-qualifier {
+	margin: 0.65rem 0 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.55;
+	line-height: 1.3;
+}
+
+/* ----------------------------------------------------------------
+   Report artifact — central proof object
+   Adds a quiet ink-blue accent stripe at the top, stronger ambient
+   shadow, and a small masthead subtitle ("For the principal · Sample issue").
+---------------------------------------------------------------- */
+.cc-report-artifact {
+	border-top: 2px solid var(--wp--preset--color--ink-blue);
+	padding: 1.85rem 2.1rem;
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04),
+				0 40px 60px -32px rgba(27, 42, 86, 0.4),
+				0 16px 32px -20px rgba(27, 42, 86, 0.18);
+	transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+				box-shadow 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-report-artifact:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04),
+				0 56px 80px -36px rgba(27, 42, 86, 0.45),
+				0 22px 40px -22px rgba(27, 42, 86, 0.22);
+}
+.cc-report-artifact__masthead {
+	align-items: flex-start;
+	gap: 1rem;
+}
+.cc-report-artifact__sub {
+	margin: 0.4rem 0 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.65rem;
+	font-weight: 500;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--mute);
+	line-height: 1.3;
+}
+.cc-report-artifact__date {
+	flex-shrink: 0;
+	white-space: nowrap;
+}
+
+
+/* ================================================================
+   PHASE 5 — Editorial lift, Practice Effect bridge, hero subhead pair
+================================================================ */
+
+/* ----------------------------------------------------------------
+   Hero — second subhead paragraph rhythm
+   The second subhead carries more commercial weight; tighten the
+   space between the two so they read as a single editorial unit.
+---------------------------------------------------------------- */
+.cc-hero-subhead--secondary {
+	margin-top: -0.5rem;
+}
+.cc-hero-grid__main .cc-button {
+	margin-top: 0.25rem;
+}
+
+/* ----------------------------------------------------------------
+   Section — The Practice Effect
+   Editorial bridge between the problem and the system.
+   Cloud White ground gives the page a moment of breath.
+---------------------------------------------------------------- */
+.cc-section--practice-effect {
+	/* Tighter than a full chapter — this is an editorial bridge, not its own act. */
+	padding-top: clamp(2.25rem, 4.5vw, 3.75rem) !important;
+	padding-bottom: clamp(2.25rem, 4.5vw, 3.75rem) !important;
+	border-top: 1px solid rgba(27, 42, 86, 0.06);
+	border-bottom: 1px solid rgba(27, 42, 86, 0.06);
+}
+
+.cc-practice-effect {
+	max-width: 820px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 0.95rem;
+}
+.cc-practice-effect h2 {
+	font-size: clamp(1.45rem, 3vw, 2.1rem);
+	margin: 0 0 0.5rem;
+	line-height: 1.15;
+}
+.cc-practice-effect p {
+	font-size: clamp(1rem, 1.35vw, 1.1rem);
+	line-height: 1.55;
+	margin: 0;
+	color: var(--wp--preset--color--ink-blue);
+	max-width: 60ch;
+}
+.cc-practice-effect__beauties {
+	margin-top: 0.6rem !important;
+	padding-top: 1rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.12);
+	font-style: italic;
+	font-weight: 400;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.92;
+	max-width: 56ch !important;
+}
+
+/* ----------------------------------------------------------------
+   Report artifact — 3-item footer
+---------------------------------------------------------------- */
+.cc-report-artifact__footer {
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+.cc-report-artifact__footer span {
+	white-space: nowrap;
+}
+.cc-report-artifact__footer span:not(:last-child)::after {
+	content: '·';
+	margin-left: 0.75rem;
+	color: rgba(27, 42, 86, 0.25);
+	font-weight: 400;
+}
+
+/* ----------------------------------------------------------------
+   Report — supporting paragraph rhythm and coda
+---------------------------------------------------------------- */
+.cc-report-coda {
+	margin: 0 !important;
+	max-width: 38ch !important;
+	font-size: 0.95rem;
+	line-height: 1.55;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-report-coda em {
+	font-style: italic;
+	font-weight: 500;
 }
 

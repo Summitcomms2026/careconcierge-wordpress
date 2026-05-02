@@ -1,9 +1,9 @@
 <?php
 /**
- * Title: Section 05 — The Conversion Intelligence Report
+ * Title: Section 05 — The Owner’s View (Conversion Intelligence Report)
  * Slug: careconcierge/section-05-report
  * Categories: careconcierge
- * Description: Editorial text on the left; a report-artifact preview on the right with TOC-style metric rows.
+ * Description: Editorial text on the left; central proof object — the Conversion Intelligence Report — on the right with a TOC-style preview.
  * Inserter: yes
  */
 ?>
@@ -12,18 +12,22 @@
 	<!-- wp:html -->
 	<div class="cc-report-grid">
 		<div class="cc-report-text cc-reveal">
-			<p class="cc-eyebrow">The Conversion Intelligence Report</p>
+			<p class="cc-eyebrow">The Owner&rsquo;s View</p>
 			<h2>You are not buying software. You are buying the report.</h2>
-			<p>A monthly document, not a dashboard. Eight pages. Plain English. Delivered to the principal.</p>
-			<p class="cc-report-supporting">Most coordinators report on activity. The Conversion Intelligence Report names outcomes &mdash; so a principal who has never logged in still knows, monthly, exactly what the platform is doing for the practice.</p>
+			<p>Most platforms show activity. CareConcierge is designed to show consequence.</p>
+			<p class="cc-report-supporting">Each month, the principal receives a plain-English Conversion Intelligence Report showing what happened at the front end of the practice: what came in, what was answered, what was qualified, what was handed off, which sleeping beauties were reawakened, and where value is still leaking.</p>
+			<p class="cc-report-coda">Not a dashboard. Not another login. Not more noise. <em>A report an owner can actually read.</em></p>
 			<?php /* TODO: drop the actual eight-page sample PDF at /sample-report.pdf in WP uploads or theme root once the file is supplied. Until then this 404s gracefully. */ ?>
 			<a class="cc-button cc-button--ghost" href="/sample-report.pdf" target="_blank" rel="noopener">See a sample report <span aria-hidden="true">&rarr;</span></a>
 		</div>
 
 		<aside class="cc-report-artifact cc-reveal" aria-label="Sample monthly report">
 			<header class="cc-report-artifact__masthead">
-				<p class="cc-report-artifact__name">Conversion Intelligence Report</p>
-				<p class="cc-report-artifact__date">Monthly · Sample</p>
+				<div>
+					<p class="cc-report-artifact__name">Conversion Intelligence Report</p>
+					<p class="cc-report-artifact__sub">For the principal &middot; Sample issue</p>
+				</div>
+				<p class="cc-report-artifact__date">Monthly</p>
 			</header>
 			<ol class="cc-report-artifact__list" role="list">
 				<li class="cc-report-artifact__row">
@@ -49,6 +53,7 @@
 			</ol>
 			<footer class="cc-report-artifact__footer">
 				<span>Eight pages</span>
+				<span>Plain English</span>
 				<span>Delivered to the principal</span>
 			</footer>
 		</aside>

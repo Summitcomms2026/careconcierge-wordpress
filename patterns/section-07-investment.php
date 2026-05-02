@@ -1,9 +1,9 @@
 <?php
 /**
- * Title: Section 07 — Investment
+ * Title: Section 07 — The Commercial Case (Investment)
  * Slug: careconcierge/section-07-investment
  * Categories: careconcierge
- * Description: Ink Blue panel — reduced headline scale, tighter lines, US carve-out, recovered-case coda.
+ * Description: Ink Blue panel — Growth-tier qualifier, conservative US carve-out, and the reawakened-enquiry argument.
  * Inserter: yes
  */
 ?>
@@ -11,15 +11,16 @@
 <section id="investment" class="wp-block-group cc-section cc-section--investment has-cloud-white-color has-ink-blue-background-color has-text-color has-background">
 	<!-- wp:html -->
 	<div class="cc-invest cc-reveal">
-		<p class="cc-eyebrow cc-eyebrow--on-dark">Investment</p>
-		<h2>From A$2,950 / £1,450 per month.</h2>
-		<p class="cc-invest__copy">Three tiers: Practice (anchor), Growth (the primary offer), Elite (high-volume or multi-site). Twelve-month engagements. Setup fees and inclusions detailed in the engagement order.</p>
-		<p class="cc-invest__us">United States &mdash; by application. HIPAA-compliant deployment is configured per practice.</p>
+		<p class="cc-eyebrow cc-eyebrow--on-dark">The Commercial Case</p>
+		<h2>From A$2,950 / &pound;1,450 per month.</h2>
+		<p class="cc-invest__copy">CareConcierge is offered across three tiers: Practice, Growth, and Elite. The public entry point reflects the Growth tier &mdash; the level most suited to practices serious about protecting enquiry value, coordinator time, and consultation flow.</p>
+		<p class="cc-invest__copy">Engagements are twelve months. Setup fees and inclusions are detailed in the engagement order.</p>
+		<p class="cc-invest__us">United States deployment is by application. HIPAA-compliant configuration is assessed per practice.</p>
 		<div class="cc-invest__coda">
-			<h3>One recovered surgical case per month covers the platform for the year.</h3>
-			<p>Most practices see that in the first twelve days.</p>
+			<h3>One reawakened enquiry can change the arithmetic.</h3>
+			<p>The real question is not whether the platform is affordable. It is what the practice is already losing when serious patient demand is left unanswered, under-qualified, or followed up too late.</p>
 		</div>
-		<a class="cc-button cc-button--on-dark cc-invest__cta" href="#walkthrough">Book a thirty-minute walkthrough <span aria-hidden="true">&rarr;</span></a>
+		<a class="cc-button cc-button--on-dark cc-invest__cta" href="#walkthrough">Book a founder briefing <span aria-hidden="true">&rarr;</span></a>
 	</div>
 	<!-- /wp:html -->
 </section>

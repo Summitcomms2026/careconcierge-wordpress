@@ -1,9 +1,9 @@
 <?php
 /**
- * Title: Section 02 — The Opportunity
+ * Title: Section 02 — The Hidden Leak (Opportunity)
  * Slug: careconcierge/section-02-opportunity
  * Categories: careconcierge
- * Description: Editorial text on the left, image placeholder + refined regulator credibility panel on the right.
+ * Description: The quiet leak between enquiry and consultation. Editorial text on the left, image placeholder + regulatory credibility panel on the right.
  * Inserter: yes
  */
 ?>
@@ -12,15 +12,16 @@
 	<!-- wp:html -->
 	<div class="cc-opportunity-grid">
 		<div class="cc-opportunity-text cc-reveal">
-			<p class="cc-eyebrow">The Opportunity</p>
-			<h2>The competitive edge is no longer advertising.</h2>
-			<p>ASA, GMC and AHPRA guidance now tightly restrict what private surgical practice can say, and how it can say it. The edge belongs to whoever responds fastest, most intelligently, at any hour.</p>
-			<p>The mover wins the consultation. We built CareConcierge so the mover is, reliably, you.</p>
+			<p class="cc-eyebrow">The Hidden Leak</p>
+			<h2>The most expensive gap in private practice is no longer visibility. It is response.</h2>
+			<p>Private surgeons do not lose every opportunity in public. The real leak is quieter. It happens after hours, between procedures, across inboxes, in hesitant WhatsApp messages, cold web enquiries, half-qualified leads, and patient conversations that never reach the coordinator with enough context to act.</p>
+			<p>Advertising can create demand. It cannot protect it. Once a patient raises their hand, speed, tone, judgement, and follow-through become the commercial difference.</p>
+			<p>CareConcierge was built for that gap.</p>
 		</div>
 		<div class="cc-opportunity-aside">
 			<?php /* Replace .cc-img-ph with <img src="…" alt="…" class="cc-img cc-img-ph--portrait"> when supplied. Suggested: a tonal architectural / clinic-interior photograph (e.g. supplied via /wp-content/themes/careconcierge/assets/images/placeholders/opportunity.jpg). */ ?>
-			<div class="cc-img-ph cc-img-ph--portrait cc-reveal" role="img" aria-label="Editorial photograph placeholder — atmospheric clinic interior to follow">
-				<span class="cc-img-ph__caption">Editorial photograph &mdash; to follow</span>
+			<div class="cc-img-ph cc-img-ph--portrait cc-reveal" role="img" aria-label="Practice atmosphere placeholder — image to follow">
+				<span class="cc-img-ph__caption">Practice atmosphere &mdash; image to follow</span>
 			</div>
 			<aside class="cc-proof-panel cc-reveal" aria-label="Regulatory environments considered">
 				<p class="cc-proof-panel__heading">Built for the regulatory reality of private practice.</p>
