@@ -4670,6 +4670,30 @@ body.cc-is-scrolled.cc-section-active--investment.cc-vertical-medical    .cc-aud
 	/* No alarmist red — keep it calm; flag only on submit attempts. */
 }
 
+/* Compliance caution — sits above the fields. Left rule line in
+   the eucalyptus accent + a small label reads as quiet guidance
+   rather than a warning, but is unmistakeably present before the
+   user begins to type. */
+.cc-deck-form__caution {
+	margin: 0 0 0.4rem;
+	padding: 0.55rem 0.6rem 0.55rem 0.85rem;
+	border-left: 2px solid var(--wp--preset--color--eucalyptus);
+	background: rgba(127, 192, 172, 0.06);
+	font-size: 0.76rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--ink-blue);
+	border-radius: 0 4px 4px 0;
+}
+.cc-deck-form__caution-label {
+	display: block;
+	font-size: 0.6rem;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--eucalyptus);
+	margin-bottom: 0.2rem;
+}
+
 .cc-deck-form__error {
 	margin: 0;
 	font-size: 0.78rem;

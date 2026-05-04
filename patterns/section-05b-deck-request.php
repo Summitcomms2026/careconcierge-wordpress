@@ -83,9 +83,29 @@ $cc_deck_nonce = wp_create_nonce( 'cc_deck_request' );
 						<p class="cc-deck-form__intro">Tell us where to send the relevant version. We will share the deck most appropriate to your market, regulatory environment and practice model.</p>
 					</header>
 
+					<!--
+					Form behaviour (kept in comments so this remains public-facing prose):
+					  - Submits via JavaScript fetch() to wp-admin/admin-ajax.php
+					    (action: cc_deck_request) — see assets/js/main.js step 6.
+					  - Server handler validates every required field, sends an
+					    internal notification to greg@careconcierge.health and a
+					    confirmation email to the requester — see functions.php
+					    careconcierge_handle_deck_request().
+					  - On success the form panel hides and either the .thanks
+					    state (with the dynamic Australia / United Kingdom /
+					    United States deck link) or the .other state (no deck,
+					    "we'll send the right edition directly") is revealed in
+					    place. No page reload, no scroll jump unless the form
+					    was already off-screen.
+					-->
 					<form class="cc-deck-form__form" novalidate>
 						<input type="hidden" name="cc_deck_nonce" value="<?php echo esc_attr( $cc_deck_nonce ); ?>" />
 						<input type="hidden" name="cc_deck_page_url" value="" />
+
+						<p class="cc-deck-form__caution" role="note">
+							<span class="cc-deck-form__caution-label" aria-hidden="true">Please note</span>
+							Please do not include patient-identifiable or clinical information.
+						</p>
 
 						<div class="cc-deck-form__field">
 							<label for="cc-deck-name">Full name <span class="cc-deck-form__required" aria-hidden="true">*</span></label>
@@ -166,7 +186,7 @@ $cc_deck_nonce = wp_create_nonce( 'cc_deck_request' );
 							<span class="cc-deck-form__submit-spinner" aria-hidden="true"></span>
 						</button>
 
-						<p class="cc-deck-form__consent">By submitting this form, you agree that CareConcierge may contact you about the deck and relevant patient communication infrastructure. No clinical or patient information should be submitted through this form.</p>
+						<p class="cc-deck-form__consent">By submitting this form, you agree that CareConcierge may contact you about the deck and relevant patient communication infrastructure.</p>
 						<p class="cc-deck-form__trust">We will not share your details. We will not add you to a carnival of automated nonsense. One deck, then a considered follow-up if relevant.</p>
 					</form>
 				</div>
