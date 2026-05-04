@@ -7,6 +7,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Theme modules — split out for legibility:
+ *   inc/seo.php        meta tags (title / description / canonical / OG / Twitter)
+ *   inc/schema.php     JSON-LD (Organization, WebSite, WebPage, Service, FAQPage, DigitalDocument)
+ *   inc/analytics.php  analytics provider stub (no real script enqueued by default)
+ */
+require_once __DIR__ . '/inc/seo.php';
+require_once __DIR__ . '/inc/schema.php';
+require_once __DIR__ . '/inc/analytics.php';
+
 if ( ! function_exists( 'careconcierge_setup' ) ) {
 	function careconcierge_setup() {
 		load_theme_textdomain( 'careconcierge', get_template_directory() . '/languages' );
