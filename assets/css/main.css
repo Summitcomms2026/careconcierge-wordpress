@@ -111,8 +111,15 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 
 .cc-site-header > .wp-block-group {
 	width: 100%;
-	max-width: 1280px;
-	margin: 0 auto;
+	/* Align the wordmark and audience switcher with the OUTER edges
+	   of every section panel (the hero panel's left and right edges,
+	   not its inner content). The parent .cc-site-header already
+	   carries `padding: 0 var(--cc-content-x)` which gives the same
+	   edge inset as every cc-section, so removing the inner
+	   max-width lets the header content fill the same horizontal
+	   span as the hero/intel/investment panels below it. */
+	max-width: none;
+	margin: 0;
 }
 
 .cc-wordmark {
@@ -812,7 +819,7 @@ body.admin-bar .cc-site-header { top: var(--cc-admin-h, 0); }
 }
 .cc-report-artifact__row {
 	display: grid;
-	grid-template-columns: 2.25rem 1fr auto;
+	grid-template-columns: 2.25rem 1fr;
 	gap: 1rem;
 	align-items: baseline;
 	padding: 0.7rem 0;
@@ -1706,5 +1713,3520 @@ body.cc-section-active--investment .cc-sidenav__link.is-active .cc-sidenav__dot 
 .cc-report-coda em {
 	font-style: italic;
 	font-weight: 500;
+}
+
+
+/* ================================================================
+   PHASE 6 — Supplied asset integration
+================================================================ */
+
+/* ----------------------------------------------------------------
+   Wordmark (header SVG) and footer wordmark
+---------------------------------------------------------------- */
+.cc-wordmark {
+	display: inline-flex;
+	align-items: center;
+	height: auto;
+	transition: opacity 200ms ease;
+	/* Keep whitespace so the SVG inherits sizing from its width attr. */
+}
+.cc-wordmark__svg {
+	display: block;
+	height: 1.1rem;
+	width: auto;
+	max-width: 100%;
+}
+body.cc-is-scrolled .cc-wordmark__svg {
+	height: 0.95rem;
+}
+@media (max-width: 420px) {
+	.cc-wordmark__svg { height: 0.85rem; }
+}
+
+.cc-footer__wordmark {
+	display: block;
+	height: 1.4rem;
+	width: auto;
+	margin: 0 0 1rem;
+	opacity: 0.95;
+}
+
+/* ----------------------------------------------------------------
+   Photography primitive — <figure class="cc-img"> wraps an <img>
+   with object-fit: cover and consistent ratios.
+---------------------------------------------------------------- */
+.cc-img {
+	display: block;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	border-radius: 4px;
+	background: var(--wp--preset--color--soft-cloud);
+	position: relative;
+}
+.cc-img > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-img:hover > img { transform: scale(1.015); }
+
+.cc-img--portrait  { aspect-ratio: 4 / 5; }
+.cc-img--square    { aspect-ratio: 1 / 1; }
+.cc-img--landscape { aspect-ratio: 16 / 9; }
+.cc-img--strip     { aspect-ratio: 24 / 7; }
+.cc-img--fill      { aspect-ratio: auto; height: 100%; min-height: 280px; }
+
+/* Subtle Ink-Blue tint overlay only on photography variants where it
+   helps tonal coherence with the page. Editorial restraint. */
+.cc-img--portrait::after,
+.cc-img--strip::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(27, 42, 86, 0) 60%, rgba(27, 42, 86, 0.18) 100%);
+	pointer-events: none;
+}
+
+/* Solution image strip uses .cc-solution-strip + cc-img classes together;
+   the strip CSS still applies (max-width / margin), but the visual is now real photography. */
+.cc-solution-strip.cc-img {
+	background: transparent;
+}
+
+/* Walkthrough split: image side already height-matched via cc-img--fill. */
+.cc-walk-split__image { min-height: 280px; }
+@media (max-width: 768px) {
+	.cc-walk-split__image { min-height: 220px; }
+}
+
+/* ----------------------------------------------------------------
+   Founder portraits — editorial, 4:5, B&W coherence
+   Pouria's portrait has a darker background; using a soft tonal mat
+   keeps the three columns visually coherent against Soft Cloud.
+---------------------------------------------------------------- */
+.cc-founder__portrait {
+	margin: 0 0 1.1rem;
+	padding: 0;
+	overflow: hidden;
+	border-radius: 4px;
+	background: var(--wp--preset--color--ink-blue);
+	aspect-ratio: 4 / 5;
+	max-width: 230px;
+}
+.cc-founder__portrait > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/* Soft monochrome desaturate to keep the three portraits coherent
+	   (one of three is colour, two are B&W). */
+	filter: grayscale(100%) contrast(1.02);
+	transition: filter 600ms cubic-bezier(0.16, 1, 0.3, 1),
+				transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-founder:hover .cc-founder__portrait > img {
+	filter: grayscale(70%) contrast(1.02);
+	transform: scale(1.02);
+}
+
+
+/* ================================================================
+   PHASE 7 — Styling lift: curved geometry, softer cards, panel feel
+   Cues borrowed from the previous design reference:
+     - curved bottom corners on the hero (Eucalyptus into cream)
+     - dark navy sections rendered as floating curved panels
+     - the brighter Practice Effect lifted as a card over Soft Cloud
+     - card radius bumped for tactile, less architectural feel
+     - button presence dialled up without becoming SaaS-loud
+   Cues intentionally rejected:
+     - top horizontal nav, 5-feature card grid, accordion section,
+       newsletter signup, "Technology Partners" logo strip,
+       "Intelligent Messaging for Modern Clinics" copy.
+================================================================ */
+
+/* ----------------------------------------------------------------
+   Section geometry — curved corners only where adjacent backgrounds
+   match the body Soft Cloud; otherwise the corner triangle would
+   show the wrong colour.
+---------------------------------------------------------------- */
+
+/* Hero curves down into Soft Cloud below (Opportunity). */
+.cc-section--hero {
+	border-radius: 0 0 clamp(2rem, 4vw, 3.25rem) clamp(2rem, 4vw, 3.25rem);
+}
+
+/* Practice Effect lifts as a brighter card; remove the previous hairlines. */
+.cc-section--practice-effect {
+	border-top: none;
+	border-bottom: none;
+	border-radius: clamp(1.25rem, 2.5vw, 2rem);
+	width: calc(100% - clamp(1rem, 3vw, 2.5rem));
+	margin-left: auto;
+	margin-right: auto;
+	box-shadow: 0 1px 0 rgba(27, 42, 86, 0.04),
+				0 24px 40px -28px rgba(27, 42, 86, 0.18);
+}
+
+/* Intelligence — curved top emerging from Soft Cloud above (Solution).
+   Bottom stays flush because Report (Soft Feather) follows. */
+.cc-section--intelligence {
+	border-radius: clamp(2rem, 4vw, 3.25rem) clamp(2rem, 4vw, 3.25rem) 0 0;
+}
+
+/* Investment — floats as a dark card; both adjacent sections are Soft Cloud. */
+.cc-section--investment {
+	border-radius: clamp(2rem, 4vw, 3.25rem);
+}
+
+/* When sections become rounded panels they no longer need the inter-section
+   hairline that previously broke up consecutive Soft Cloud blocks. */
+.cc-section--solution { border-top: none; }
+
+/* ----------------------------------------------------------------
+   Card radius — softer, more tactile, less architectural
+---------------------------------------------------------------- */
+.cc-img,
+.cc-img-ph,
+.cc-founder__portrait,
+.cc-proof-panel,
+.cc-cal-placeholder,
+.cc-step,
+.cc-walk-split__image {
+	border-radius: 14px;
+}
+.cc-compare__col {
+	border-radius: 16px;
+}
+.cc-report-artifact {
+	/* Paper-like proof object — slightly tighter top-left/right since it has the
+	   Ink Blue accent stripe; gentle bottom corners. */
+	border-radius: 14px;
+}
+
+/* Founder portraits — slightly larger radius for warmer, less ID-card feel. */
+.cc-founder__portrait {
+	border-radius: 16px;
+}
+
+/* ----------------------------------------------------------------
+   Button presence — dialled up without becoming SaaS-loud.
+   Slight weight bump; arrow gets a quiet circle on hover.
+---------------------------------------------------------------- */
+.cc-button {
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	border-radius: 12px;
+}
+.cc-button > span {
+	border-radius: 999px;
+	transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+				background 220ms ease;
+}
+.cc-button--primary:hover {
+	box-shadow: 0 14px 28px -14px rgba(27, 42, 86, 0.5),
+				0 4px 8px -4px rgba(27, 42, 86, 0.18);
+}
+.cc-button--ghost {
+	border-width: 1.5px;
+}
+.cc-button--ghost:hover {
+	box-shadow: 0 14px 28px -14px rgba(27, 42, 86, 0.32);
+}
+.cc-button--on-dark:hover {
+	box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.55);
+}
+
+/* ----------------------------------------------------------------
+   Dark sections — luxury internal feel
+   Add a subtle inner top-edge highlight so the curved panel looks
+   lifted rather than poured. Internal padding nudge for breath.
+---------------------------------------------------------------- */
+.cc-section--intelligence,
+.cc-section--investment {
+	position: relative;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Compare cards inside Intelligence — bigger lift on the brand card. */
+.cc-compare__col--brand {
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04),
+				0 32px 60px -28px rgba(0, 0, 0, 0.55),
+				0 12px 24px -12px rgba(0, 0, 0, 0.35);
+}
+.cc-compare__col--brand:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04),
+				0 44px 72px -28px rgba(0, 0, 0, 0.6),
+				0 16px 28px -14px rgba(0, 0, 0, 0.4);
+}
+
+/* ----------------------------------------------------------------
+   Report artifact — paper feel
+---------------------------------------------------------------- */
+.cc-report-artifact {
+	background: var(--wp--preset--color--cloud-white);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04),
+				0 44px 70px -36px rgba(27, 42, 86, 0.42),
+				0 18px 32px -18px rgba(27, 42, 86, 0.18);
+}
+
+/* ----------------------------------------------------------------
+   Image cards — slightly stronger ambient shadow so they integrate
+   into the section architecture rather than feeling stuck on.
+---------------------------------------------------------------- */
+.cc-img,
+.cc-walk-split__image {
+	box-shadow: 0 24px 40px -28px rgba(27, 42, 86, 0.25),
+				0 8px 16px -8px rgba(27, 42, 86, 0.10);
+}
+
+/* Solution image strip — slightly less pronounced shadow because it's wide. */
+.cc-solution-strip.cc-img {
+	box-shadow: 0 18px 36px -22px rgba(27, 42, 86, 0.22);
+}
+
+/* Founder portraits — quiet shadow plus warm hover lift. */
+.cc-founder__portrait {
+	box-shadow: 0 14px 28px -18px rgba(27, 42, 86, 0.22);
+	transition: box-shadow 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-founder:hover .cc-founder__portrait {
+	box-shadow: 0 22px 40px -22px rgba(27, 42, 86, 0.32);
+}
+
+/* ----------------------------------------------------------------
+   Mobile guards — prevent curved section corners from creating
+   horizontal overflow or awkward edges on narrow viewports.
+---------------------------------------------------------------- */
+@media (max-width: 540px) {
+	.cc-section--practice-effect {
+		width: calc(100% - 0.5rem);
+	}
+	.cc-section--hero {
+		border-radius: 0 0 24px 24px;
+	}
+	.cc-section--intelligence {
+		border-radius: 24px 24px 0 0;
+	}
+	.cc-section--investment {
+		border-radius: 24px;
+	}
+	.cc-section--practice-effect {
+		border-radius: 18px;
+	}
+}
+
+
+/* ================================================================
+   PHASE 8 — Editorial discipline: typography, grid, italics→bold
+================================================================ */
+
+/* ----------------------------------------------------------------
+   Reset italic where it had become decorative; rely on weight + colour.
+   Italic is now reserved for true editorial emphasis only.
+---------------------------------------------------------------- */
+.cc-intel-intro p,
+.cc-founders-intro p,
+.cc-practice-effect__beauties,
+.cc-intel-coda h3,
+.cc-invest__coda h3 {
+	font-style: normal;
+}
+
+.cc-intel-coda h3,
+.cc-invest__coda h3 {
+	font-weight: 600;
+	letter-spacing: -0.005em;
+}
+
+/* The kicker line carries weight without italic. */
+.cc-intel-coda__kicker strong {
+	font-weight: 600;
+	color: var(--wp--preset--color--eucalyptus);
+}
+
+/* ----------------------------------------------------------------
+   Eyebrow — slightly smaller + more breathing room above the headline
+---------------------------------------------------------------- */
+.cc-eyebrow {
+	font-size: 0.5625rem;
+	letter-spacing: 0.26em;
+	margin: 0 0 2.25rem;
+	opacity: 0.65;
+}
+.cc-eyebrow::before {
+	width: 1.75rem;
+}
+
+/* ----------------------------------------------------------------
+   Bold treatment in body — refined, not loud
+---------------------------------------------------------------- */
+.cc-section p strong {
+	font-weight: 600;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-section--intelligence p strong,
+.cc-section--investment p strong {
+	color: var(--wp--preset--color--cloud-white);
+}
+
+/* ----------------------------------------------------------------
+   Standardised paragraph widths within sections
+---------------------------------------------------------------- */
+.cc-opportunity-text p { max-width: 60ch; }
+.cc-solution-intro p   { max-width: 60ch; }
+.cc-intel-intro p      { max-width: 56ch; }
+.cc-intel-coda p       { max-width: 60ch; }
+.cc-report-text p      { max-width: 42ch; }
+.cc-founders-intro p   { max-width: 62ch; font-size: clamp(1rem, 1.35vw, 1.15rem); line-height: 1.55; }
+.cc-invest__copy       { max-width: 56ch; }
+.cc-walk p             { max-width: 56ch; }
+
+/* ----------------------------------------------------------------
+   Section 02 — Hidden Leak: the regulator strip
+   Sits below the 2-column grid, full-width, integrated.
+---------------------------------------------------------------- */
+.cc-regulator-strip {
+	max-width: 1180px;
+	margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+	padding-top: clamp(1.5rem, 3vw, 2rem);
+	border-top: 1px solid rgba(27, 42, 86, 0.14);
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+.cc-regulator-strip__heading {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.75;
+	margin: 0;
+}
+.cc-regulator-strip__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1.5rem 2rem;
+	align-items: end;
+}
+.cc-regulator-strip__item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+	min-height: 3.25rem;
+	justify-content: flex-end;
+}
+.cc-regulator-strip__logo {
+	display: block;
+	height: 28px;
+	width: auto;
+	max-width: 180px;
+	object-fit: contain;
+	object-position: left center;
+	filter: grayscale(100%) brightness(0.3);
+	opacity: 0.65;
+	transition: opacity 220ms ease, filter 220ms ease;
+}
+.cc-regulator-strip__item:hover .cc-regulator-strip__logo {
+	opacity: 0.9;
+	filter: grayscale(80%) brightness(0.25);
+}
+.cc-regulator-strip__code {
+	display: inline-block;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.05rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.8;
+	line-height: 1;
+	height: 28px;
+	display: flex;
+	align-items: center;
+}
+.cc-regulator-strip__name {
+	font-size: 0.7rem;
+	letter-spacing: 0.04em;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.55;
+	line-height: 1.3;
+}
+.cc-regulator-strip__disclaimer {
+	margin: 0.75rem 0 0;
+	padding-top: 1rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.08);
+	font-size: 0.6875rem;
+	line-height: 1.55;
+	color: rgba(27, 42, 86, 0.55);
+	max-width: 76ch;
+}
+
+@media (max-width: 900px) {
+	.cc-regulator-strip__list { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+	.cc-regulator-strip__list { grid-template-columns: 1fr; gap: 1rem; }
+	.cc-regulator-strip__item { min-height: auto; }
+}
+
+/* ----------------------------------------------------------------
+   Section 02 — opportunity grid: tighten ratio + remove old aside layout
+---------------------------------------------------------------- */
+.cc-opportunity-grid {
+	grid-template-columns: 1.35fr 1fr;
+	gap: clamp(2rem, 4.5vw, 3.5rem);
+	align-items: start;
+}
+.cc-opportunity-grid > .cc-img {
+	max-width: 360px;
+	justify-self: end;
+	width: 100%;
+}
+@media (max-width: 900px) {
+	.cc-opportunity-grid > .cc-img {
+		max-width: none;
+		justify-self: stretch;
+	}
+}
+
+/* ----------------------------------------------------------------
+   Section 03 — Solution: separate the process rail from the image
+   The image now sits in its own calm visual field with breathing room.
+---------------------------------------------------------------- */
+.cc-solution-strip {
+	margin-top: clamp(4rem, 7vw, 6rem) !important;
+	padding-top: clamp(2rem, 4vw, 3rem);
+	border-top: 1px solid rgba(27, 42, 86, 0.08);
+}
+.cc-solution-intro h2 { max-width: 22ch; }
+
+/* ----------------------------------------------------------------
+   Section 06 — Founders: portrait crop consistency, tighter hierarchy
+---------------------------------------------------------------- */
+.cc-founder__portrait {
+	max-width: none;
+	width: 78%;
+	margin-left: 0;
+	margin-right: 0;
+}
+.cc-founder__name {
+	font-size: 1.125rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	margin: 0;
+}
+.cc-founder__role {
+	margin: 0.35rem 0 0.85rem;
+}
+.cc-founder__bio {
+	font-size: 0.9rem;
+	line-height: 1.65;
+	max-width: 36ch;
+}
+@media (max-width: 900px) {
+	.cc-founder__portrait { width: 60%; max-width: 220px; }
+}
+
+/* ----------------------------------------------------------------
+   Section 04 — Intelligence: refine compare titles
+---------------------------------------------------------------- */
+.cc-compare__title {
+	font-size: 1.35rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+}
+.cc-compare__body { max-width: 38ch; }
+.cc-compare__col--brand .cc-compare__tag {
+	font-style: normal;
+	font-weight: 600;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 1;
+}
+.cc-compare__col--muted .cc-compare__tag {
+	font-style: normal;
+	font-weight: 500;
+}
+
+/* ----------------------------------------------------------------
+   Section 05 — Report: typography polish in the artifact
+---------------------------------------------------------------- */
+.cc-report-text h2 { max-width: 18ch; }
+.cc-report-coda { font-size: 0.95rem; line-height: 1.6; opacity: 0.88; max-width: 42ch !important; }
+.cc-report-text .cc-button { margin-top: 1.5rem; }
+
+.cc-report-artifact__key {
+	font-size: 1rem;
+	font-weight: 500;
+}
+
+/* ----------------------------------------------------------------
+   Section 07 — Investment: typography polish
+---------------------------------------------------------------- */
+.cc-invest h2 {
+	max-width: 24ch;
+}
+.cc-invest__coda h3 {
+	color: var(--wp--preset--color--eucalyptus);
+}
+
+/* ----------------------------------------------------------------
+   Section 08 — Walkthrough: keep typography aligned with new system
+---------------------------------------------------------------- */
+.cc-walk h2 { max-width: 22ch; }
+.cc-walk__supporting { max-width: 56ch; }
+
+/* ----------------------------------------------------------------
+   Side nav — slightly more right-edge breath, slightly tighter type
+   Prevents collision with content on right-heavy sections.
+---------------------------------------------------------------- */
+.cc-sidenav {
+	right: clamp(1.75rem, 3vw, 3rem);
+}
+.cc-sidenav__list {
+	gap: 1.15rem;
+}
+@media (max-width: 1280px) {
+	.cc-sidenav { display: none; }
+}
+
+
+/* ================================================================
+   PANEL REFINEMENT — Header & Navigation only
+   All selectors below are header-scoped. No shared typography,
+   button, section, side-nav, or footer rule is intentionally
+   touched. Section-active body classes (set by existing main.js)
+   drive the pulse between the blue and stone treatments.
+================================================================ */
+
+/* Edge inset — header-scoped via !important so the global section padding
+   rule (which uses --cc-content-x for the rest of the site) is unaffected.
+   Halved from the previous clamp(1.875rem, 6vw, 3.375rem) per request. */
+.cc-site-header {
+	padding-left: clamp(0.9375rem, 3vw, 1.6875rem) !important;
+	padding-right: clamp(0.9375rem, 3vw, 1.6875rem) !important;
+}
+
+/* Wordmark — dual-SVG stack. The white logo is the standing state
+   (over the default blue header); the ink logo overlays and
+   crossfades in when the active section is dark. */
+.cc-wordmark {
+	position: relative;
+	display: inline-block;
+	line-height: 0;
+}
+.cc-wordmark__svg {
+	display: block;
+	height: 2rem;            /* 80% larger than the prior 1.1rem */
+	width: auto;
+	max-width: 100%;
+}
+.cc-wordmark__svg--dark {
+	position: absolute;
+	inset: 0;
+	height: 100%;
+	width: auto;
+	opacity: 0;
+}
+body.cc-section-active--intelligence .cc-wordmark__svg--light,
+body.cc-section-active--investment   .cc-wordmark__svg--light { opacity: 0; }
+body.cc-section-active--intelligence .cc-wordmark__svg--dark,
+body.cc-section-active--investment   .cc-wordmark__svg--dark  { opacity: 1; }
+
+/* Compact wordmark when scrolled — preserve existing scroll behaviour. */
+body.cc-is-scrolled .cc-wordmark__svg { height: 1.7rem; }
+
+/* Header pulse — translucent blue over light sections, stone over dark. */
+.cc-site-header {
+	background-color: rgba(27, 42, 86, 0.60) !important;
+	border-bottom-color: rgba(255, 255, 255, 0.10) !important;
+}
+body.cc-section-active--intelligence .cc-site-header,
+body.cc-section-active--investment   .cc-site-header {
+	background-color: rgba(229, 232, 228, 0.80) !important;
+	border-bottom-color: rgba(27, 42, 86, 0.10) !important;
+}
+/* When scrolled, both states gain a touch of opacity for legibility. */
+body.cc-is-scrolled .cc-site-header {
+	background-color: rgba(27, 42, 86, 0.72) !important;
+}
+body.cc-is-scrolled.cc-section-active--intelligence .cc-site-header,
+body.cc-is-scrolled.cc-section-active--investment   .cc-site-header {
+	background-color: rgba(229, 232, 228, 0.92) !important;
+}
+
+/* Audience switcher — bold, sentence case, contrast-aware. */
+.cc-audience-switcher {
+	text-transform: none;
+	font-weight: 700;
+	font-size: 0.875rem;
+	letter-spacing: 0;
+	gap: 1rem;
+}
+.cc-audience-link {
+	color: rgba(255, 255, 255, 0.62);
+	border-bottom-color: transparent;
+}
+.cc-audience-link:hover {
+	color: var(--wp--preset--color--cloud-white);
+	border-bottom-color: rgba(255, 255, 255, 0.45);
+}
+.cc-audience-sep { color: rgba(255, 255, 255, 0.30); }
+
+/* Active vertical — re-asserted for the new colour system (light state). */
+.cc-vertical-surgeons .cc-audience-link[data-vertical="surgeons"],
+.cc-vertical-dentists .cc-audience-link[data-vertical="dentists"],
+.cc-vertical-medical  .cc-audience-link[data-vertical="medical"] {
+	color: var(--wp--preset--color--cloud-white);
+	border-bottom-color: var(--wp--preset--color--cloud-white);
+}
+
+/* Stone state (header sitting over a dark section) — invert nav colours. */
+body.cc-section-active--intelligence .cc-audience-link,
+body.cc-section-active--investment   .cc-audience-link {
+	color: rgba(27, 42, 86, 0.55);
+}
+body.cc-section-active--intelligence .cc-audience-link:hover,
+body.cc-section-active--investment   .cc-audience-link:hover {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: rgba(27, 42, 86, 0.45);
+}
+body.cc-section-active--intelligence .cc-audience-sep,
+body.cc-section-active--investment   .cc-audience-sep {
+	color: rgba(27, 42, 86, 0.25);
+}
+body.cc-section-active--intelligence.cc-vertical-surgeons .cc-audience-link[data-vertical="surgeons"],
+body.cc-section-active--investment.cc-vertical-surgeons   .cc-audience-link[data-vertical="surgeons"],
+body.cc-section-active--intelligence.cc-vertical-dentists .cc-audience-link[data-vertical="dentists"],
+body.cc-section-active--investment.cc-vertical-dentists   .cc-audience-link[data-vertical="dentists"],
+body.cc-section-active--intelligence.cc-vertical-medical  .cc-audience-link[data-vertical="medical"],
+body.cc-section-active--investment.cc-vertical-medical    .cc-audience-link[data-vertical="medical"] {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+}
+
+/* Smooth pulse — background, border, colour, opacity on the same easing. */
+.cc-site-header,
+.cc-audience-link,
+.cc-audience-sep,
+.cc-wordmark__svg {
+	transition: background-color 360ms cubic-bezier(0.16, 1, 0.3, 1),
+				border-color 360ms cubic-bezier(0.16, 1, 0.3, 1),
+				color 360ms cubic-bezier(0.16, 1, 0.3, 1),
+				opacity 360ms cubic-bezier(0.16, 1, 0.3, 1),
+				height 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile — preserve readability under the bold/larger logo. */
+@media (max-width: 640px) {
+	.cc-audience-switcher { font-size: 0.75rem; gap: 0.6rem; }
+	.cc-wordmark__svg { height: 1.6rem; }
+	body.cc-is-scrolled .cc-wordmark__svg { height: 1.4rem; }
+}
+@media (max-width: 420px) {
+	.cc-audience-switcher { font-size: 0.7rem; gap: 0.5rem; }
+	.cc-audience-sep { display: none; }
+	.cc-wordmark__svg { height: 1.4rem; }
+	body.cc-is-scrolled .cc-wordmark__svg { height: 1.25rem; }
+}
+
+
+/* ================================================================
+   PANEL REFINEMENT — Header iteration 2
+   • Logo halved
+   • Header tightened so it meets the next panel
+   • Opaque at rest, translucent only on scroll
+   • Nav back to ALL CAPS
+   All header-scoped. The shared --cc-header-h variable is updated
+   because it exists specifically to coordinate header height with
+   anchor-scroll offsets — adjusting it for this header pass is in
+   scope; no unrelated rule is touched.
+================================================================ */
+
+:root {
+	--cc-header-h: 2rem;
+	--cc-header-h-scrolled: 2rem;
+}
+
+/* Logo — halved across base, scrolled, and mobile breakpoints. */
+.cc-wordmark__svg              { height: 1rem; }
+body.cc-is-scrolled .cc-wordmark__svg { height: 0.85rem; }
+@media (max-width: 640px) {
+	.cc-wordmark__svg              { height: 0.85rem; }
+	body.cc-is-scrolled .cc-wordmark__svg { height: 0.75rem; }
+}
+@media (max-width: 420px) {
+	.cc-wordmark__svg              { height: 0.75rem; }
+	body.cc-is-scrolled .cc-wordmark__svg { height: 0.65rem; }
+}
+
+/* Background — opaque at rest. Translucency only kicks in on scroll. */
+.cc-site-header {
+	background-color: rgb(27, 42, 86) !important;
+	border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+body.cc-is-scrolled .cc-site-header {
+	background-color: rgba(27, 42, 86, 0.60) !important;
+}
+body.cc-is-scrolled.cc-section-active--intelligence .cc-site-header,
+body.cc-is-scrolled.cc-section-active--investment   .cc-site-header {
+	background-color: rgba(229, 232, 228, 0.85) !important;
+	border-bottom-color: rgba(27, 42, 86, 0.10) !important;
+}
+
+/* Logo + nav inversion now also gated on cc-is-scrolled — at rest the
+   header is always opaque blue with the white logo and white nav. */
+body.cc-section-active--intelligence .cc-wordmark__svg--light,
+body.cc-section-active--investment   .cc-wordmark__svg--light { opacity: 1; }
+body.cc-section-active--intelligence .cc-wordmark__svg--dark,
+body.cc-section-active--investment   .cc-wordmark__svg--dark  { opacity: 0; }
+body.cc-is-scrolled.cc-section-active--intelligence .cc-wordmark__svg--light,
+body.cc-is-scrolled.cc-section-active--investment   .cc-wordmark__svg--light { opacity: 0; }
+body.cc-is-scrolled.cc-section-active--intelligence .cc-wordmark__svg--dark,
+body.cc-is-scrolled.cc-section-active--investment   .cc-wordmark__svg--dark  { opacity: 1; }
+
+/* Reset earlier dark-section nav inversion for the at-rest case. */
+body.cc-section-active--intelligence .cc-audience-link,
+body.cc-section-active--investment   .cc-audience-link {
+	color: rgba(255, 255, 255, 0.62);
+}
+body.cc-section-active--intelligence .cc-audience-sep,
+body.cc-section-active--investment   .cc-audience-sep {
+	color: rgba(255, 255, 255, 0.30);
+}
+body.cc-section-active--intelligence.cc-vertical-surgeons .cc-audience-link[data-vertical="surgeons"],
+body.cc-section-active--investment.cc-vertical-surgeons   .cc-audience-link[data-vertical="surgeons"],
+body.cc-section-active--intelligence.cc-vertical-dentists .cc-audience-link[data-vertical="dentists"],
+body.cc-section-active--investment.cc-vertical-dentists   .cc-audience-link[data-vertical="dentists"],
+body.cc-section-active--intelligence.cc-vertical-medical  .cc-audience-link[data-vertical="medical"],
+body.cc-section-active--investment.cc-vertical-medical    .cc-audience-link[data-vertical="medical"] {
+	color: var(--wp--preset--color--cloud-white);
+	border-bottom-color: var(--wp--preset--color--cloud-white);
+}
+
+/* Re-apply ink-on-stone inversion only when scrolled into a dark section. */
+body.cc-is-scrolled.cc-section-active--intelligence .cc-audience-link,
+body.cc-is-scrolled.cc-section-active--investment   .cc-audience-link {
+	color: rgba(27, 42, 86, 0.55);
+}
+body.cc-is-scrolled.cc-section-active--intelligence .cc-audience-link:hover,
+body.cc-is-scrolled.cc-section-active--investment   .cc-audience-link:hover {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: rgba(27, 42, 86, 0.45);
+}
+body.cc-is-scrolled.cc-section-active--intelligence .cc-audience-sep,
+body.cc-is-scrolled.cc-section-active--investment   .cc-audience-sep {
+	color: rgba(27, 42, 86, 0.25);
+}
+body.cc-is-scrolled.cc-section-active--intelligence.cc-vertical-surgeons .cc-audience-link[data-vertical="surgeons"],
+body.cc-is-scrolled.cc-section-active--investment.cc-vertical-surgeons   .cc-audience-link[data-vertical="surgeons"],
+body.cc-is-scrolled.cc-section-active--intelligence.cc-vertical-dentists .cc-audience-link[data-vertical="dentists"],
+body.cc-is-scrolled.cc-section-active--investment.cc-vertical-dentists   .cc-audience-link[data-vertical="dentists"],
+body.cc-is-scrolled.cc-section-active--intelligence.cc-vertical-medical  .cc-audience-link[data-vertical="medical"],
+body.cc-is-scrolled.cc-section-active--investment.cc-vertical-medical    .cc-audience-link[data-vertical="medical"] {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+}
+
+/* Nav — back to ALL CAPS. Slight tracking added for caps legibility at
+   bold weight; size nudged down so caps don't dominate the smaller header. */
+.cc-audience-switcher {
+	text-transform: uppercase;
+	font-size: 0.75rem;
+	letter-spacing: 0.08em;
+}
+
+
+/* ================================================================
+   PANEL REFINEMENT — Header iteration 3
+   • Revert: restore the blue breathing inside the bar (the bar's
+     own internal height) — undo the iteration-2 thinning
+   • Remove: the stone (body bg) spacing above and below the bar
+     that was the original concern
+   • Bump: logo +40% over current 1rem → 1.4rem
+   • Halve: edge inset again
+================================================================ */
+
+/* Restore the bar's internal height. */
+:root {
+	--cc-header-h: 4rem;
+	--cc-header-h-scrolled: 3.25rem;
+}
+
+/* Logo — +40%. Mobile and scrolled values scaled proportionally. */
+.cc-wordmark__svg              { height: 1.4rem; }
+body.cc-is-scrolled .cc-wordmark__svg { height: 1.2rem; }
+@media (max-width: 640px) {
+	.cc-wordmark__svg              { height: 1.2rem; }
+	body.cc-is-scrolled .cc-wordmark__svg { height: 1.05rem; }
+}
+@media (max-width: 420px) {
+	.cc-wordmark__svg              { height: 1.05rem; }
+	body.cc-is-scrolled .cc-wordmark__svg { height: 0.9rem; }
+}
+
+/* Edge inset — halved again (third halving). */
+.cc-site-header {
+	padding-left: clamp(0.234375rem, 0.75vw, 0.421875rem) !important;
+	padding-right: clamp(0.234375rem, 0.75vw, 0.421875rem) !important;
+}
+
+/* Zero out the stone (body bg) spacing surrounding the bar.
+   Touches body, .wp-site-blocks, and the template-part wrapper because
+   those are the only places that can produce visible space above/below
+   the sticky header. The browser-default body margin (8 px) was the
+   most likely source of the "stone above" gap. */
+body { margin: 0 !important; }
+.wp-site-blocks {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+header.wp-block-template-part { margin: 0 !important; }
+.cc-site-header { margin: 0 !important; }
+
+
+/* ================================================================
+   PANEL REFINEMENT — Header iteration 4
+   Standing state reverted to BLUE ON STONE (the inverse of iteration 2).
+   Scroll states retained:
+     • Default (at rest)            : stone bg + ink logo + ink nav
+     • Scrolled, light sections     : blue bg + white logo + white nav  (the "blue nav" alternate)
+     • Scrolled, dark sections      : stone bg + ink logo + ink nav     (matches standing)
+   The pulse during scroll therefore alternates blue↔stone based on the
+   section behind, with stone as the calm anchor at rest.
+================================================================ */
+
+/* ---------- DEFAULT (at rest) — stone + ink ---------- */
+.cc-site-header {
+	background-color: var(--wp--preset--color--soft-cloud) !important;
+	border-bottom-color: rgba(27, 42, 86, 0.10) !important;
+}
+.cc-wordmark__svg--light { opacity: 0; }
+.cc-wordmark__svg--dark  { opacity: 1; }
+.cc-audience-link {
+	color: rgba(27, 42, 86, 0.55);
+	border-bottom-color: transparent;
+}
+.cc-audience-link:hover {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: rgba(27, 42, 86, 0.45);
+}
+.cc-audience-sep { color: rgba(27, 42, 86, 0.25); }
+.cc-vertical-surgeons .cc-audience-link[data-vertical="surgeons"],
+.cc-vertical-dentists .cc-audience-link[data-vertical="dentists"],
+.cc-vertical-medical  .cc-audience-link[data-vertical="medical"] {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+}
+
+/* ---------- SCROLLED, LIGHT SECTIONS — blue + white (the alternate) ---------- */
+body.cc-is-scrolled .cc-site-header {
+	background-color: rgba(27, 42, 86, 0.60) !important;
+	border-bottom-color: rgba(255, 255, 255, 0.10) !important;
+}
+body.cc-is-scrolled .cc-wordmark__svg--light { opacity: 1; }
+body.cc-is-scrolled .cc-wordmark__svg--dark  { opacity: 0; }
+body.cc-is-scrolled .cc-audience-link {
+	color: rgba(255, 255, 255, 0.62);
+	border-bottom-color: transparent;
+}
+body.cc-is-scrolled .cc-audience-link:hover {
+	color: var(--wp--preset--color--cloud-white);
+	border-bottom-color: rgba(255, 255, 255, 0.45);
+}
+body.cc-is-scrolled .cc-audience-sep { color: rgba(255, 255, 255, 0.30); }
+body.cc-is-scrolled.cc-vertical-surgeons .cc-audience-link[data-vertical="surgeons"],
+body.cc-is-scrolled.cc-vertical-dentists .cc-audience-link[data-vertical="dentists"],
+body.cc-is-scrolled.cc-vertical-medical  .cc-audience-link[data-vertical="medical"] {
+	color: var(--wp--preset--color--cloud-white);
+	border-bottom-color: var(--wp--preset--color--cloud-white);
+}
+
+/* ---------- SCROLLED + DARK SECTION — back to stone (matches standing) ---------- */
+body.cc-is-scrolled.cc-section-active--intelligence .cc-site-header,
+body.cc-is-scrolled.cc-section-active--investment   .cc-site-header {
+	background-color: rgba(229, 232, 228, 0.85) !important;
+	border-bottom-color: rgba(27, 42, 86, 0.10) !important;
+}
+body.cc-is-scrolled.cc-section-active--intelligence .cc-wordmark__svg--light,
+body.cc-is-scrolled.cc-section-active--investment   .cc-wordmark__svg--light { opacity: 0; }
+body.cc-is-scrolled.cc-section-active--intelligence .cc-wordmark__svg--dark,
+body.cc-is-scrolled.cc-section-active--investment   .cc-wordmark__svg--dark  { opacity: 1; }
+body.cc-is-scrolled.cc-section-active--intelligence .cc-audience-link,
+body.cc-is-scrolled.cc-section-active--investment   .cc-audience-link {
+	color: rgba(27, 42, 86, 0.55);
+	border-bottom-color: transparent;
+}
+body.cc-is-scrolled.cc-section-active--intelligence .cc-audience-link:hover,
+body.cc-is-scrolled.cc-section-active--investment   .cc-audience-link:hover {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: rgba(27, 42, 86, 0.45);
+}
+body.cc-is-scrolled.cc-section-active--intelligence .cc-audience-sep,
+body.cc-is-scrolled.cc-section-active--investment   .cc-audience-sep {
+	color: rgba(27, 42, 86, 0.25);
+}
+body.cc-is-scrolled.cc-section-active--intelligence.cc-vertical-surgeons .cc-audience-link[data-vertical="surgeons"],
+body.cc-is-scrolled.cc-section-active--investment.cc-vertical-surgeons   .cc-audience-link[data-vertical="surgeons"],
+body.cc-is-scrolled.cc-section-active--intelligence.cc-vertical-dentists .cc-audience-link[data-vertical="dentists"],
+body.cc-is-scrolled.cc-section-active--investment.cc-vertical-dentists   .cc-audience-link[data-vertical="dentists"],
+body.cc-is-scrolled.cc-section-active--intelligence.cc-vertical-medical  .cc-audience-link[data-vertical="medical"],
+body.cc-is-scrolled.cc-section-active--investment.cc-vertical-medical    .cc-audience-link[data-vertical="medical"] {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+}
+
+
+/* ================================================================
+   GLOBAL — Section edge logic matched to the header
+   Each section's coloured background now starts where the logo
+   starts and ends where the right of "Other Medical" ends.
+   Sections become centred cards floating in the body Soft Cloud.
+   Same calc as the header's inner group so the alignment is exact.
+
+     header inner group max-width: calc((100vw + 1280px) / 2)
+     section            max-width: calc((100vw + 1280px) / 2)
+
+   At narrow viewports (≤ 1280 px) the calc exceeds the viewport,
+   so sections span full width — no inset on mobile.
+================================================================ */
+
+.cc-section {
+	max-width: calc((100vw + 1280px) / 2);
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+/* Practice Effect previously carried its own additional width inset.
+   Reset to the new global edge logic so it lines up with every other
+   panel; keep its rounded corners and box-shadow. */
+.cc-section--practice-effect {
+	width: 100% !important;
+}
+
+
+/* ================================================================
+   GLOBAL — Eyebrow visibility (explicitly requested)
+   The Commercial Case eyebrow uses --on-dark (opacity 0.85). Bumping
+   the base eyebrow to the same visibility so all eyebrows match it.
+   Size, weight, line-height already shared via .cc-eyebrow base.
+================================================================ */
+.cc-eyebrow { opacity: 0.85; }
+
+/* ================================================================
+   PANEL REFINEMENT — Hero
+   Eyebrow added, copy revised, headline -30%, body -25%, CTA → ghost
+   with tighter edges and snug arrow, image montage on the right with
+   integrated System Live floating panel, MoF-style fade-in-from-side.
+   All selectors below are hero-scoped.
+================================================================ */
+
+/* Headline — 30% smaller than the previous clamp(2.25rem, 4.6vw, 3.4rem). */
+.cc-hero-headline {
+	font-size: clamp(1.575rem, 3.22vw, 2.38rem);
+	max-width: 22ch;
+}
+/* Subhead — 25% smaller than the previous clamp(1rem, 1.5vw, 1.15rem). */
+.cc-hero-subhead {
+	font-size: clamp(0.75rem, 1.125vw, 0.8625rem);
+	max-width: 38ch;
+}
+
+/* CTA — ghost off-state: blue stroke, transparent fill, blue text + arrow.
+   Tighter edges, snug arrow, equal padding either side. */
+.cc-hero-cta {
+	background: transparent !important;
+	color: var(--wp--preset--color--ink-blue) !important;
+	border: 1.5px solid var(--wp--preset--color--ink-blue) !important;
+	border-radius: 6px !important;
+	padding: 0 1.4rem !important;
+	min-height: 48px !important;
+	gap: 0.45rem !important;
+	font-weight: 600;
+}
+.cc-hero-cta:hover {
+	background: var(--wp--preset--color--ink-blue) !important;
+	color: var(--wp--preset--color--cloud-white) !important;
+}
+.cc-hero-cta > span {
+	width: auto !important;
+	height: auto !important;
+	font-size: 1em !important;
+	border-radius: 0 !important;
+}
+.cc-hero-cta:hover > span { transform: translateX(2px); }
+
+/* Hero visual column — 3-card montage in CSS Grid + integrated System Live overlay. */
+.cc-hero-visual {
+	position: relative;
+	aspect-ratio: 4 / 5;
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	grid-template-rows: 2fr 1fr;
+	gap: 0.75rem;
+	width: 100%;
+	max-width: none;
+}
+.cc-hero-montage__primary,
+.cc-hero-montage__secondary,
+.cc-hero-montage__tertiary {
+	margin: 0;
+	overflow: hidden;
+	border-radius: 14px;
+	box-shadow: 0 18px 32px -20px rgba(27, 42, 86, 0.32),
+				0 6px 12px -6px rgba(27, 42, 86, 0.14);
+}
+.cc-hero-montage__primary  { grid-column: 1; grid-row: 1 / span 2; }
+.cc-hero-montage__secondary { grid-column: 2; grid-row: 1; }
+.cc-hero-montage__tertiary  { grid-column: 2; grid-row: 2; }
+.cc-hero-montage__primary .cc-img-ph,
+.cc-hero-montage__secondary .cc-img-ph,
+.cc-hero-montage__tertiary .cc-img-ph {
+	height: 100%;
+	width: 100%;
+	aspect-ratio: auto;
+	border-radius: 14px;
+}
+
+/* System Live — integrated floating panel over the bottom-left of the montage. */
+.cc-system-signal--integrated {
+	position: absolute;
+	bottom: 1rem;
+	left: 1rem;
+	max-width: 14rem;
+	background: rgba(229, 232, 228, 0.92);
+	backdrop-filter: saturate(180%) blur(14px);
+	-webkit-backdrop-filter: saturate(180%) blur(14px);
+	border: 1px solid rgba(27, 42, 86, 0.10);
+	border-radius: 12px;
+	padding: 0.85rem 1rem 0.95rem;
+	z-index: 5;
+	justify-self: auto;
+}
+.cc-system-signal--integrated .cc-system-signal__label {
+	font-size: 0.6rem;
+	margin: 0 0 0.65rem;
+	letter-spacing: 0.18em;
+}
+.cc-system-signal--integrated .cc-system-signal__list {
+	gap: 0.4rem;
+}
+.cc-system-signal--integrated .cc-system-signal__list::before {
+	left: 0.225rem;
+	top: 0.45rem;
+	bottom: 0.45rem;
+}
+.cc-system-signal--integrated .cc-system-signal__item {
+	font-size: 0.7rem;
+	gap: 0.65rem;
+	font-weight: 500;
+}
+.cc-system-signal--integrated .cc-system-signal__dot {
+	width: 0.45rem;
+	height: 0.45rem;
+}
+.cc-system-signal--integrated .cc-system-signal__meta {
+	margin-top: 0.6rem;
+	font-size: 0.55rem;
+}
+
+/* MoF-style entrance — slide in from the right with stagger.
+   Overrides the global .cc-reveal translateY for hero-visual children only. */
+.cc-hero-visual .cc-reveal {
+	transform: translateX(48px) scale(0.96);
+	transition: opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+				transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-hero-visual .cc-reveal.is-visible {
+	transform: none;
+}
+/* Slightly longer stagger inside the montage for a more cinematic entrance. */
+.cc-hero-visual.cc-reveal-group .cc-reveal { transition-delay: 0ms; }
+.cc-hero-visual.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 140ms; }
+.cc-hero-visual.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 280ms; }
+.cc-hero-visual.cc-reveal-group .cc-reveal:nth-child(4) { transition-delay: 480ms; }
+
+/* Mobile — collapse the visual to a vertical stack and unfloat the System Live. */
+@media (max-width: 900px) {
+	.cc-hero-visual {
+		aspect-ratio: auto;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: auto auto;
+	}
+	.cc-hero-montage__primary  { grid-column: 1 / span 2; aspect-ratio: 16 / 9; }
+	.cc-hero-montage__primary .cc-img-ph { aspect-ratio: 16 / 9; }
+	.cc-system-signal--integrated {
+		position: relative;
+		bottom: auto; left: auto;
+		max-width: none;
+		grid-column: 1 / span 2;
+		margin-top: 0.25rem;
+	}
+}
+
+
+/* ================================================================
+   GLOBAL — Eyebrow refinements
+   • Dash bumped to medium weight (2 px, full opacity inside the
+     eyebrow's own opacity layer so it sits at the same visual
+     weight as the text)
+   • Margin to headline reduced by 30% (2.25rem → 1.575rem)
+================================================================ */
+.cc-eyebrow { margin: 0 0 1.575rem; }
+.cc-eyebrow::before {
+	height: 2px;
+	opacity: 1;
+}
+
+/* ================================================================
+   PANEL REFINEMENT — Hero (fine-tune)
+   • Headline + subhead share the same container width
+   • CTA matches the size + weight of the bolded "sleeping beauties"
+   • Montage: larger overlapping cards, contiant-style multi-direction
+     entrance
+================================================================ */
+
+/* Matching text container widths — both headline and subhead now share
+   a single max-width so their right edges align as one column. */
+.cc-hero-headline,
+.cc-hero-subhead {
+	max-width: 34rem;
+}
+/* Override the previous secondary subhead margin so both subheads
+   sit cleanly inside the matched column. */
+.cc-hero-subhead--secondary { max-width: 34rem; }
+
+/* CTA — exact match to the bolded "sleeping beauties" inside the subhead.
+   Subhead size: clamp(0.75rem, 1.125vw, 0.8625rem). Strong weight: 600. */
+.cc-hero-cta {
+	font-size: clamp(0.75rem, 1.125vw, 0.8625rem) !important;
+	font-weight: 600 !important;
+	min-height: 44px !important;       /* tightened to match the smaller text */
+	padding: 0 1.1rem !important;      /* equal padding either side */
+	gap: 0.4rem !important;            /* arrow snug against text */
+}
+.cc-hero-cta > span {
+	font-size: 1em !important;          /* arrow inherits text size exactly */
+	font-weight: 600 !important;
+	width: auto !important;
+	height: auto !important;
+}
+
+/* ----------------------------------------------------------------
+   Montage redesign — bigger overlapping cards, contiant-style depth
+---------------------------------------------------------------- */
+.cc-hero-visual {
+	position: relative;
+	aspect-ratio: 1 / 1.05;
+	width: 100%;
+	max-width: none;
+	display: block;            /* override the previous CSS Grid */
+}
+
+/* Override the previous grid-cell sizing rules entirely. */
+.cc-hero-montage__primary,
+.cc-hero-montage__secondary,
+.cc-hero-montage__tertiary {
+	position: absolute;
+	margin: 0;
+	overflow: hidden;
+	border-radius: 14px;
+	box-shadow: 0 30px 60px -28px rgba(27, 42, 86, 0.45),
+				0 10px 24px -10px rgba(27, 42, 86, 0.22);
+	transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
+				box-shadow 600ms cubic-bezier(0.16, 1, 0.3, 1);
+	grid-column: auto;
+	grid-row: auto;
+}
+
+/* Primary — large portrait anchoring the left side. */
+.cc-hero-montage__primary {
+	top: 0;
+	left: 0;
+	width: 64%;
+	height: 78%;
+	z-index: 1;
+}
+
+/* Secondary — landscape on the upper-right, overlapping primary at the seam. */
+.cc-hero-montage__secondary {
+	top: 8%;
+	right: 0;
+	width: 50%;
+	height: 42%;
+	z-index: 2;
+}
+
+/* Tertiary — square in the lower-right, overlapping primary's bottom. */
+.cc-hero-montage__tertiary {
+	bottom: 0;
+	right: 6%;
+	width: 52%;
+	height: 50%;
+	z-index: 3;
+}
+
+/* Inner placeholders fill their figure exactly. */
+.cc-hero-montage__primary .cc-img-ph,
+.cc-hero-montage__secondary .cc-img-ph,
+.cc-hero-montage__tertiary .cc-img-ph {
+	height: 100%;
+	width: 100%;
+	aspect-ratio: auto;
+	border-radius: 14px;
+}
+
+/* Subtle hover lift — adds tactility without disturbing the layered composition. */
+.cc-hero-montage__primary:hover   { transform: translate(-3px, -3px); }
+.cc-hero-montage__secondary:hover { transform: translate( 3px, -3px); }
+.cc-hero-montage__tertiary:hover  { transform: translate( 0,  -4px); }
+
+/* System Live — repositioned into the natural empty pocket left of the
+   tertiary card (lower-left of the montage area). */
+.cc-system-signal--integrated {
+	bottom: 4%;
+	left: 0;
+	z-index: 4;
+}
+
+/* ----------------------------------------------------------------
+   Contiant-style entrance — multi-direction settle, longer ease
+---------------------------------------------------------------- */
+.cc-hero-visual .cc-hero-montage__primary.cc-reveal {
+	opacity: 0;
+	transform: translateX(-50px) scale(0.95);
+}
+.cc-hero-visual .cc-hero-montage__secondary.cc-reveal {
+	opacity: 0;
+	transform: translateX(60px) scale(0.95);
+}
+.cc-hero-visual .cc-hero-montage__tertiary.cc-reveal {
+	opacity: 0;
+	transform: translateY(60px) scale(0.95);
+}
+.cc-hero-visual .cc-system-signal--integrated.cc-reveal {
+	opacity: 0;
+	transform: translateY(20px) scale(0.96);
+}
+.cc-hero-visual .cc-reveal {
+	transition: opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+				transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-hero-visual .cc-reveal.is-visible {
+	opacity: 1;
+	transform: none;
+}
+
+/* Stagger inside the montage — primary first, then layered second/third,
+   then the System Live overlay. */
+.cc-hero-visual.cc-reveal-group .cc-reveal { transition-delay: 0ms; }
+.cc-hero-visual.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 180ms; }
+.cc-hero-visual.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 360ms; }
+.cc-hero-visual.cc-reveal-group .cc-reveal:nth-child(4) { transition-delay: 580ms; }
+
+/* Mobile — collapse the absolute layout to a stacked flow. */
+@media (max-width: 900px) {
+	.cc-hero-visual {
+		aspect-ratio: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.cc-hero-montage__primary,
+	.cc-hero-montage__secondary,
+	.cc-hero-montage__tertiary {
+		position: static;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+	}
+	.cc-system-signal--integrated {
+		position: static;
+		max-width: none;
+	}
+}
+
+
+/* ================================================================
+   GLOBAL — Eyebrow weight bump
+   500 read as too fine for ALL CAPS at this size; bumped to 700.
+================================================================ */
+.cc-eyebrow { font-weight: 700; }
+
+/* ================================================================
+   PANEL REFINEMENT — Hero (fine-tune 2)
+   • Headline up ~13% so "more" wraps to the next line
+   • Body copy at full opacity (no longer recessive)
+   • Primary placeholder wider + slight extend-left
+   • System Live smaller, offset, asymmetric — its own thing
+================================================================ */
+
+.cc-hero-headline {
+	font-size: clamp(1.8rem, 3.7vw, 2.7rem);
+}
+
+.cc-hero-subhead {
+	opacity: 1;
+}
+
+.cc-hero-montage__primary {
+	left: -1rem;       /* extends slightly into the column gap */
+	width: 72%;        /* was 64% */
+	height: 80%;       /* was 78% */
+}
+
+/* System Live — smaller, sits at the bottom-left and pokes out a hair
+   so it reads as its own floating element rather than aligned to the
+   primary card's corner. */
+.cc-system-signal--integrated {
+	bottom: -0.5rem;
+	left: -0.5rem;
+	max-width: 12rem;
+}
+
+
+/* Hero — primary placeholder extended further left (wider toward the left). */
+.cc-hero-montage__primary {
+	left: -2.5rem;     /* was -1rem */
+	width: 80%;        /* was 72% */
+}
+
+
+/* ================================================================
+   PANEL REFINEMENT — Hero (fine-tune 3)
+   • Text containers narrowed (34rem → 30rem) so "the" wraps to line 2
+     and "plastic" falls to line 3
+   • Primary placeholder extended further left + wider
+================================================================ */
+
+.cc-hero-headline,
+.cc-hero-subhead,
+.cc-hero-subhead--secondary {
+	max-width: 30rem;
+}
+
+.cc-hero-montage__primary {
+	left: -3.5rem;     /* was -2.5rem */
+	width: 84%;        /* was 80% */
+}
+
+
+/* ================================================================
+   GLOBAL — Apply hero typography logic to remaining panels
+   Approved global pass per request. Touches:
+     • .cc-button (all buttons match the hero CTA's tight metrics)
+     • Section h2 sizes (unified clamp, proportional to hero h1)
+     • Section body sizes (measured reduction)
+     • Section heading line-height (slightly tightened)
+   Hero remains the loudest moment because hero h1 is still larger
+   than the new unified section h2 max.
+================================================================ */
+
+/* Buttons — global tightening (matches hero CTA spec). Color treatment
+   per variant (--primary, --ghost, --on-dark) is unchanged. */
+.cc-button {
+	border-radius: 6px;
+	min-height: 44px;
+	padding: 0 1.1rem;
+	gap: 0.4rem;
+	font-size: clamp(0.75rem, 1.125vw, 0.8625rem);
+	font-weight: 600;
+}
+.cc-button > span {
+	width: auto;
+	height: auto;
+	font-size: 1em;
+	border-radius: 0;
+}
+
+/* Section heading line-height — slightly tightened (1.12 → 1.1). */
+.cc-section h1,
+.cc-section h2 {
+	line-height: 1.1;
+}
+
+/* Section h2 — unified clamp, proportional to the hero h1 (max 2.7rem).
+   Section h2 max 2.2rem ≈ 80% of hero h1 — sections sit below hero in scale. */
+.cc-opportunity-text h2,
+.cc-solution-intro h2,
+.cc-intel-intro h2,
+.cc-report-text h2,
+.cc-founders-intro h2,
+.cc-walk h2,
+.cc-practice-effect h2 {
+	font-size: clamp(1.4rem, 2.95vw, 2.2rem);
+}
+
+/* Investment h2 stays the "display" variant — still slightly larger but
+   reduced in line with the rest. Kept under hero h1. */
+.cc-invest h2 {
+	font-size: clamp(1.55rem, 3.3vw, 2.4rem);
+}
+
+/* Section body paragraphs — ~10% reduction; opacity at full ink-blue.
+   :not(.cc-eyebrow) keeps the eyebrow label at its own size. */
+.cc-opportunity-text p:not(.cc-eyebrow),
+.cc-solution-intro p:not(.cc-eyebrow),
+.cc-intel-intro p:not(.cc-eyebrow),
+.cc-intel-coda p:not(.cc-eyebrow),
+.cc-report-text p:not(.cc-eyebrow),
+.cc-founders-intro p:not(.cc-eyebrow),
+.cc-walk p:not(.cc-eyebrow),
+.cc-walk__supporting,
+.cc-practice-effect p:not(.cc-eyebrow),
+.cc-invest__copy {
+	font-size: clamp(0.9rem, 1.2vw, 1.025rem);
+	opacity: 1;
+}
+
+
+/* ================================================================
+   PANEL REFINEMENT — Hero (fine-tune 4)
+   • Primary pushed further left + wider; object-position shifts
+     the visible crop to bring the phone into the frame
+   • Mobile re-asserted: all three montage cards stack at the same
+     width (the later desktop overrides were winning the cascade
+     inside the existing @media block — re-asserting at file end
+     with !important fixes that)
+================================================================ */
+
+.cc-hero-montage__primary {
+	left: -5rem;       /* was -3.5rem */
+	width: 90%;        /* was 84%   */
+}
+.cc-hero-montage__primary > img {
+	object-position: 65% center;   /* shows more of the phone */
+}
+
+@media (max-width: 900px) {
+	.cc-hero-visual {
+		aspect-ratio: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.cc-hero-montage__primary,
+	.cc-hero-montage__secondary,
+	.cc-hero-montage__tertiary {
+		position: static !important;
+		width: 100% !important;
+		height: auto !important;
+		left: auto !important;
+		aspect-ratio: 16 / 9;
+	}
+	.cc-hero-montage__primary > img {
+		object-position: center;     /* default crop on mobile */
+	}
+	.cc-system-signal--integrated {
+		position: static !important;
+		bottom: auto !important;
+		left: auto !important;
+		max-width: none !important;
+		margin-top: 0.5rem !important;
+	}
+}
+
+
+/* ================================================================
+   GLOBAL — Apply hero typography logic to remaining panels (proper)
+   The previous apply was too conservative (section h2 max only
+   shrank by 0.8 px) and was being out-cascaded in places. This
+   pass makes the reduction visible and uses !important so it wins
+   over the older per-section rules without removing them.
+================================================================ */
+
+/* Section h2 — sized to match the hero h1 exactly so every panel
+   heading sits at the same scale. Hero h1 clamp is
+   clamp(1.8rem, 3.7vw, 2.7rem); section h2s now mirror it. */
+.cc-opportunity-text h2,
+.cc-solution-intro h2,
+.cc-intel-intro h2,
+.cc-report-text h2,
+.cc-founders-intro h2,
+.cc-walk h2,
+.cc-practice-effect h2,
+.cc-invest h2 {
+	font-size: clamp(1.8rem, 3.7vw, 2.7rem) !important;
+	line-height: 1.1 !important;
+}
+
+/* Section body paragraphs — sized to match the hero subhead exactly
+   (rendered ≈ 13.8 px at desktop) so every panel reads at the same
+   body scale. The hero subhead uses clamp(1rem,1.5vw,1.15rem) but
+   computes smaller because of inheritance; we set this clamp lower
+   to land at the same rendered size site-wide.
+   :not(.cc-eyebrow) keeps the eyebrow label at its own size. */
+.cc-opportunity-text p:not(.cc-eyebrow),
+.cc-solution-intro p:not(.cc-eyebrow),
+.cc-intel-intro p:not(.cc-eyebrow),
+.cc-intel-coda p:not(.cc-eyebrow),
+.cc-report-text p:not(.cc-eyebrow),
+.cc-founders-intro p:not(.cc-eyebrow),
+.cc-walk p:not(.cc-eyebrow),
+.cc-walk__supporting,
+.cc-practice-effect p:not(.cc-eyebrow),
+.cc-invest__copy,
+.cc-deck__body p {
+	font-size: clamp(0.78rem, 1.04vw, 0.86rem) !important;
+	line-height: 1.55 !important;
+	opacity: 1 !important;
+}
+/* The Founder Briefing intro lost its .cc-walk parent in the restructure;
+   re-target the same canonical body-p size on its new container. */
+.cc-walk-grid .cc-walk__intro p {
+	font-size: clamp(0.78rem, 1.04vw, 0.86rem) !important;
+	line-height: 1.55 !important;
+}
+
+/* Sub-headings (intel coda + invest coda h3s) — reduced ~17%. */
+.cc-intel-coda h3,
+.cc-invest__coda h3 {
+	font-size: clamp(1.05rem, 2vw, 1.4rem) !important;
+}
+
+/* Compare cards (Intelligence section) — proportional reduction. */
+.cc-compare__title { font-size: 1.2rem !important; }
+.cc-compare__body  { font-size: 0.875rem !important; }
+.cc-compare__tag   { font-size: 0.78125rem !important; }
+
+/* Process rail step text — proportional reduction. */
+.cc-rail__title { font-size: 0.9rem !important; }
+.cc-rail__body  { font-size: 0.78rem !important; }
+
+/* Founder hierarchy — proportional reduction. */
+.cc-founder__name { font-size: 1rem !important; }
+.cc-founder__bio  { font-size: 0.825rem !important; }
+
+/* Report artifact body cells. */
+.cc-report-artifact__key { font-size: 0.875rem !important; }
+
+/* Report supporting + coda. */
+.cc-report-supporting { font-size: 0.875rem !important; }
+.cc-report-coda { font-size: 0.875rem !important; }
+
+/* Investment supporting line + US carve-out. */
+.cc-invest__us { font-size: 0.78125rem !important; }
+.cc-invest__coda p { font-size: 0.875rem !important; }
+
+
+/* ================================================================
+   GLOBAL — Eyebrow size + spacing lock (defensive)
+   Per-section paragraph rules (.cc-opportunity-text p,
+   .cc-solution-intro p, etc., declared earlier in this file) have
+   higher specificity than the base .cc-eyebrow rule and were
+   (a) overriding the eyebrow font-size up to ~16px and
+   (b) zeroing the margin-bottom that creates eyebrow→heading
+   breathing room. We re-assert both with !important here.
+
+   Eyebrow → heading visual gap target = 45.2px (the hero rhythm).
+   Hero achieves this via 25.2px eyebrow margin-bottom + 20px flex
+   gap on its parent. Non-flex section wrappers don't have that
+   parent gap, so we set the eyebrow margin-bottom to 2.825rem
+   (~45.2px) globally and then trim it in flex wrappers below by
+   the amount their own flex gap already contributes — so every
+   eyebrow→heading pair lands on ~45.2px regardless of layout.
+================================================================ */
+.cc-eyebrow {
+	font-size: 0.625rem !important;
+	line-height: 1 !important;
+	margin: 0 0 2.825rem !important;
+}
+
+/* Flex wrappers with 20px gap — already supply 20px between
+   eyebrow and heading, so trim eyebrow margin-bottom to 1.575rem
+   (25.2px). Total visual gap = 25.2 + 20 = 45.2px. */
+.cc-hero-grid__main > .cc-eyebrow,
+.cc-invest > .cc-eyebrow {
+	margin-bottom: 1.575rem !important;
+}
+
+/* Flex wrappers with 16px gap — supply 16px between eyebrow and
+   heading, so trim eyebrow margin-bottom to 1.825rem (29.2px).
+   Total visual gap = 29.2 + 16 = 45.2px. */
+.cc-report-text > .cc-eyebrow,
+.cc-walk > .cc-eyebrow {
+	margin-bottom: 1.825rem !important;
+}
+
+/* Flex wrapper with 15.2px (0.95rem) gap — trim eyebrow margin-bottom
+   to 1.875rem (30px). Total visual gap = 30 + 15.2 = 45.2px. */
+.cc-practice-effect > .cc-eyebrow {
+	margin-bottom: 1.875rem !important;
+}
+
+
+/* ================================================================
+   PANEL REFINEMENT — Hidden Leak (Section 02)
+   • Heading + body share one max-width (text container is the only
+     constraint; the body p's older max-width: 60ch is overridden so
+     both elements wrap to the same column edge).
+   • Container narrowed so "private" falls to line 2 of the headline.
+   • Photograph placeholder widened ~30% (360px → 468px).
+================================================================ */
+
+.cc-opportunity-text {
+	max-width: 33rem;     /* 528px — line 1 = "The most expensive gap in",
+	                          line 2 begins with "private practice…" */
+}
+
+/* Override the older 60ch cap on body paragraphs so the body wraps
+   to the same right edge as the heading. */
+.cc-opportunity-text p:not(.cc-eyebrow) {
+	max-width: none !important;
+}
+
+/* Photograph: was 360px, now 468px (+30%). */
+.cc-opportunity-grid > .cc-img {
+	max-width: 468px;
+}
+
+/* Regulator logos — uniform height across all four so they read as a
+   set, with width auto-scaling per logo's natural aspect ratio.
+   Matching by width (the previous attempt) produced very uneven
+   heights because AHPRA, GMC, ASA, HIPAA all have different aspect
+   ratios; matching by height keeps the visual rhythm calm.
+   align-self: flex-start prevents the parent flex column from
+   stretching the IMG to the column width — without it width:auto
+   resolves to "stretch" and the IMG claims the full 271 px column. */
+.cc-regulator-strip__logo {
+	align-self: flex-start !important;
+	width: auto !important;
+	height: 56px !important;
+	max-width: 100% !important;
+	object-fit: contain !important;
+	object-position: left center !important;
+}
+
+/* Distribute the four regulator items evenly across the strip width:
+   AHPRA stays flush left, HIPAA pushes flush right (aligning with the
+   right edge of the photograph above), GMC + ASA spaced in between.
+   Replaces the older 4-column grid layout. */
+.cc-regulator-strip__list {
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: wrap !important;
+	justify-content: space-between !important;
+	align-items: flex-end !important;
+	grid-template-columns: none !important;
+	gap: 1.5rem 2rem !important;
+}
+
+/* Each item shrinks to fit its content (logo + label) so space-between
+   has room to distribute. Labels are no longer constrained by the grid
+   column width — they wrap to their own intrinsic width. */
+.cc-regulator-strip__item {
+	flex: 0 0 auto !important;
+	max-width: 14rem;
+}
+
+/* Add line space between the heading and the row of logos.
+   Flex gap on the parent already provides 1.25rem; this adds another
+   ~1rem so the total breathing room is ~36 px. */
+.cc-regulator-strip__heading {
+	margin-bottom: 1rem !important;
+}
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — Hidden Leak (reveal choreography)
+   Make the panel feel alive on scroll-in:
+   • Text on the left slides in from the left
+   • Photograph on the right slides in from the right
+   • Regulator heading fades up
+   • The four logos stagger in one after another (cc-reveal-group
+     handles the nth-child delays)
+   • Disclaimer fades up after the logos
+   The base .cc-reveal rule (opacity 0, translateY 18px, 880ms ease)
+   is reused; the variants below only swap the initial transform so
+   the entrance direction differs.
+---------------------------------------------------------------- */
+
+.cc-reveal--from-left  { transform: translateX(-32px) !important; }
+.cc-reveal--from-right { transform: translateX(32px) !important; }
+.cc-reveal--from-left.is-visible,
+.cc-reveal--from-right.is-visible { transform: none !important; }
+
+/* Regulator-strip procession — each item enters 100 ms after the
+   previous, slightly longer than the global 60 ms so the four logos
+   read as a deliberate sequence rather than a quick burst. */
+.cc-regulator-strip__list.cc-reveal-group .cc-reveal:nth-child(1) { transition-delay: 0ms; }
+.cc-regulator-strip__list.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 100ms; }
+.cc-regulator-strip__list.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 200ms; }
+.cc-regulator-strip__list.cc-reveal-group .cc-reveal:nth-child(4) { transition-delay: 300ms; }
+
+/* Slightly softer translateY on the strip's heading + disclaimer so
+   they feel like part of the same wave rather than a separate beat. */
+.cc-regulator-strip__heading.cc-reveal,
+.cc-regulator-strip__disclaimer.cc-reveal {
+	transform: translateY(12px);
+}
+.cc-regulator-strip__heading.cc-reveal.is-visible,
+.cc-regulator-strip__disclaimer.cc-reveal.is-visible {
+	transform: none;
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — The Practice Effect (Section 02b)
+   • 50 / 50 grid: photography on the left, content on the right
+   • Outer container max-width 1180px so the panel's left/right
+     edges align with the regulator strip above (AHPRA flush left,
+     HIPAA flush right)
+   • Landscape photo (opportunity2.jpg) is the primary surface;
+     portrait photo (hero3.jpg) overlaps its bottom-right corner
+     for an editorial montage
+   • Reveal choreography: landscape slides in from the left first,
+     portrait fades up after, then the content text slides in from
+     the right
+---------------------------------------------------------------- */
+
+/* New outer grid wraps the visual + content. */
+.cc-practice-effect-grid {
+	max-width: 1180px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(2rem, 5vw, 4.5rem);
+	align-items: center;
+}
+
+/* The original .cc-practice-effect rule (820 px max, centred) was
+   for a single-column layout. Inside the grid it sits in the right
+   column — let it fill that column instead. */
+.cc-practice-effect-grid .cc-practice-effect {
+	max-width: none;
+	margin: 0;
+}
+
+/* Visual side — relative parent so the portrait can overlap the
+   landscape via absolute positioning. The aspect-ratio reserves
+   vertical space so layout doesn't shift while images load. */
+.cc-practice-effect__visual {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 3.4;        /* slightly taller than 4:3 to fit the portrait overhang */
+}
+
+/* Landscape — primary photo, occupies most of the visual area. */
+.cc-practice-effect__photo--landscape {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 86%;
+	aspect-ratio: 4 / 3;
+	margin: 0;
+	overflow: hidden;
+	border-radius: 6px;
+	box-shadow: 0 18px 38px rgba(27, 42, 86, 0.10);
+}
+.cc-practice-effect__photo--landscape img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	display: block;
+}
+
+/* Portrait — smaller, overlaps the landscape's bottom-right corner. */
+.cc-practice-effect__photo--portrait {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 38%;
+	aspect-ratio: 3 / 4;
+	margin: 0;
+	overflow: hidden;
+	border-radius: 6px;
+	box-shadow: 0 22px 44px rgba(27, 42, 86, 0.18);
+}
+.cc-practice-effect__photo--portrait img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	display: block;
+}
+
+/* Reveal — new "from-bottom" variant for the portrait, scaling in
+   slightly so it feels deliberate rather than just appearing.
+   Reuses the global .cc-reveal opacity + transition. */
+.cc-reveal--from-bottom {
+	transform: translateY(28px) scale(0.97) !important;
+}
+.cc-reveal--from-bottom.is-visible {
+	transform: none !important;
+}
+
+/* Choreography — sequenced delays so the panel reads as a wave:
+     0 ms  landscape slides in from the left
+   220 ms  portrait fades up + scales in
+   420 ms  content text slides in from the right                       */
+.cc-practice-effect__photo--landscape.cc-reveal { transition-delay: 0ms !important; }
+.cc-practice-effect__photo--portrait.cc-reveal  { transition-delay: 220ms !important; }
+.cc-practice-effect-grid > .cc-practice-effect.cc-reveal { transition-delay: 420ms !important; }
+
+/* Mobile: stack visual on top, content below. Keep the overlap
+   composition but reduce the offset so it doesn't dominate. */
+@media (max-width: 900px) {
+	.cc-practice-effect-grid {
+		grid-template-columns: 1fr;
+		gap: 2.5rem;
+	}
+	.cc-practice-effect__visual {
+		max-width: 36rem;
+		margin: 0 auto;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — The Chain of Custody (Section 03)
+   • Top row becomes a 50 / 50 grid: intro on the left, feature
+     photograph on the right
+   • Outer container max-width 1180px so the panel aligns with the
+     regulator strip two panels above (AHPRA flush left,
+     HIPAA flush right)
+   • Feature photo loads in greyscale and fades to colour on hover
+   • Existing 5-step rail unchanged
+   • Old guarantee dot-strip replaced by a 5-item accordion with
+     teal arrows that rotate on open
+   • Reveal choreography: intro from left, photo from right, rail
+     items cascade, accordion items cascade
+---------------------------------------------------------------- */
+
+.cc-solution-grid {
+	max-width: 1180px;
+	margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(2rem, 5vw, 4.5rem);
+	align-items: center;
+}
+
+/* Intro lives in the left column — strip the older centred-block
+   defaults and the 22ch heading cap so it can fill its half. */
+.cc-solution-grid .cc-solution-intro {
+	max-width: none;
+	margin: 0;
+	text-align: left;
+}
+.cc-solution-grid .cc-solution-intro h2 {
+	max-width: none;          /* overrides the older 22ch cap */
+}
+.cc-solution-grid .cc-solution-intro p {
+	max-width: none;          /* body wraps to the same right edge as the heading */
+}
+.cc-solution-intro__cta {
+	margin-top: 1.25rem;
+	align-self: flex-start;
+}
+
+/* Same treatment for the Hidden Leak Download deck CTA — its parent
+   .cc-opportunity-text is a flex column, so without align-self the
+   button would stretch to the full column width. */
+.cc-opportunity-text__cta {
+	margin-top: 1.25rem;
+	align-self: flex-start;
+}
+
+/* Feature photograph — right column. Renders in full colour. */
+.cc-solution-feature {
+	margin: 0;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	border-radius: 6px;
+	box-shadow: 0 18px 38px rgba(27, 42, 86, 0.10);
+}
+.cc-solution-feature img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+/* Panoramic strip (sits between the rail and the accordion).
+   Greyscale by default, fades to colour on hover/focus. The
+   transition uses a long, soft ease so the reveal feels
+   considered rather than mechanical. */
+.cc-img--bw-hover img {
+	filter: grayscale(100%);
+	transition: filter 720ms cubic-bezier(0.16, 1, 0.3, 1),
+	            transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-img--bw-hover:hover img,
+.cc-img--bw-hover:focus-within img {
+	filter: grayscale(0%);
+	transform: scale(1.015);
+}
+
+/* Need a 1180-px wrapper for the rail too so the existing rail
+   max-width keeps aligning with the strip + grid above.
+   (Already 1180px from the older rule — no change needed here.)   */
+
+/* The old .cc-guarantee dot strip is no longer rendered — its CSS
+   stays in the file but is dormant since the markup was removed. */
+
+/* ---- Accordion --------------------------------------------------- */
+
+.cc-faq {
+	max-width: 1180px;
+	margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+	display: flex;
+	flex-direction: column;
+	border-top: 1px solid rgba(27, 42, 86, 0.12);
+}
+
+.cc-faq__item {
+	border-bottom: 1px solid rgba(27, 42, 86, 0.12);
+}
+
+.cc-faq__summary {
+	width: 100%;
+	background: transparent;
+	border: 0;
+	padding: 1.4rem 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+	cursor: pointer;
+	font: inherit;
+	color: var(--wp--preset--color--ink-blue);
+	text-align: left;
+	transition: color 220ms ease;
+}
+.cc-faq__summary:hover,
+.cc-faq__summary:focus-visible {
+	color: var(--wp--preset--color--ink-blue);
+	outline: none;
+}
+.cc-faq__summary:hover .cc-faq__title,
+.cc-faq__summary:focus-visible .cc-faq__title {
+	transform: translateX(2px);
+}
+.cc-faq__title {
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+	font-weight: 700;
+	letter-spacing: -0.005em;
+	line-height: 1.3;
+	transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Teal chevron — rotates from pointing right (closed) to pointing
+   down (open). Inline SVG so we don't depend on icon files. */
+.cc-faq__arrow {
+	flex: 0 0 auto;
+	width: 1.5rem;
+	height: 1.5rem;
+	background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 6l6 6-6 6' stroke='%237FC0AC' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
+	transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+	            opacity   220ms ease;
+	opacity: 0.8;
+}
+.cc-faq__summary:hover .cc-faq__arrow,
+.cc-faq__summary:focus-visible .cc-faq__arrow {
+	opacity: 1;
+	transform: translateX(2px);
+}
+.cc-faq__item[data-cc-open="true"] .cc-faq__arrow {
+	transform: rotate(90deg);
+	opacity: 1;
+}
+.cc-faq__item[data-cc-open="true"] .cc-faq__summary:hover .cc-faq__arrow,
+.cc-faq__item[data-cc-open="true"] .cc-faq__summary:focus-visible .cc-faq__arrow {
+	transform: rotate(90deg) translateX(2px);
+}
+
+/* Smooth open/close via grid-template-rows trick (0fr → 1fr). */
+.cc-faq__body {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-faq__item[data-cc-open="true"] .cc-faq__body {
+	grid-template-rows: 1fr;
+}
+.cc-faq__body-inner {
+	overflow: hidden;
+	min-height: 0;
+}
+.cc-faq__body-inner p {
+	margin: 0 0 1.4rem;
+	padding-right: 3rem;          /* leaves room for the arrow column */
+	max-width: 70ch;
+	font-size: clamp(0.9rem, 1.15vw, 1rem);
+	line-height: 1.65;
+	color: var(--wp--preset--color--ink-blue);
+}
+
+/* ---- Reveal choreography ---------------------------------------- */
+
+/* Top row — intro slides in from left first, photo from right. */
+.cc-solution-grid > .cc-solution-intro.cc-reveal { transition-delay: 0ms !important; }
+.cc-solution-grid > .cc-solution-feature.cc-reveal { transition-delay: 200ms !important; }
+
+/* Rail — five steps cascade left-to-right with a calmer 90 ms beat. */
+.cc-rail.cc-reveal-group .cc-reveal:nth-child(1) { transition-delay: 0ms !important; }
+.cc-rail.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 90ms !important; }
+.cc-rail.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 180ms !important; }
+.cc-rail.cc-reveal-group .cc-reveal:nth-child(4) { transition-delay: 270ms !important; }
+.cc-rail.cc-reveal-group .cc-reveal:nth-child(5) { transition-delay: 360ms !important; }
+
+/* Accordion — five items cascade with a softer 70 ms beat (read as
+   one calm wave rather than a punchy sequence). */
+.cc-faq.cc-reveal-group .cc-reveal:nth-child(1) { transition-delay: 0ms !important; }
+.cc-faq.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 70ms !important; }
+.cc-faq.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 140ms !important; }
+.cc-faq.cc-reveal-group .cc-reveal:nth-child(4) { transition-delay: 210ms !important; }
+.cc-faq.cc-reveal-group .cc-reveal:nth-child(5) { transition-delay: 280ms !important; }
+
+/* Mobile: stack content above photo, narrower padding. */
+@media (max-width: 900px) {
+	.cc-solution-grid {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+	.cc-solution-grid .cc-solution-intro p { max-width: none; }
+	.cc-faq__summary { padding: 1.2rem 0; }
+	.cc-faq__body-inner p { padding-right: 0; }
+}
+
+/* Reduced motion — keep the accordion functional without the
+   smooth height transition; flatten the bw-hover transitions too. */
+@media (prefers-reduced-motion: reduce) {
+	.cc-faq__body,
+	.cc-faq__arrow,
+	.cc-faq__title,
+	.cc-img--bw-hover img {
+		transition: none !important;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — The Intelligence Question (Section 04)
+   • Intro + the two compare bubbles are unchanged in layout
+   • Brand bubble label changed from "CareConcierge" to
+     "A CareConcierge" (in the pattern markup)
+   • Guardrails coda is now wrapped in a 50 / 50 grid:
+     coda left, feature photograph right
+   • Coda's old hairline border is removed
+   • Outer grid max-width 1180 px so the panel aligns with the
+     regulator strip three panels above
+   • Reveal choreography:
+       intro fades up first
+       chatbot bubble lands with a soft overshoot
+       brand bubble lands second, slightly heavier — given
+         prominence as the resolution of the comparison
+       coda slides in from the left
+       photo slides in from the right
+---------------------------------------------------------------- */
+
+/* Coda + image centred together as a pair with a normal gap.
+   Flex with justify-content: center groups them in the middle of
+   the 1180-px container; flex-wrap keeps them stackable on narrow
+   viewports. align-items: center vertically aligns the image with
+   the text. */
+.cc-intel-coda-grid {
+	max-width: 1180px;
+	margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: clamp(1.5rem, 3.5vw, 3rem);
+}
+
+/* Inside the flex row, neutralise the older centred 880-px coda
+   block and remove the hairline that previously sat above it.
+   Capped at 32 rem so the prose holds a comfortable measure
+   without sprawling. */
+.cc-intel-coda-grid .cc-intel-coda {
+	flex: 0 1 32rem;
+	max-width: 32rem;
+	margin: 0;
+	padding-top: 0;
+	border-top: none;
+}
+
+/* Feature photograph — sits to the right of the coda at ~22 rem
+   wide (similar visual weight to the previous 332-px state).
+   Height collapses to the image's natural aspect; no row-stretch.
+   The pair centres together via the parent's justify-content. */
+.cc-intel-feature {
+	flex: 0 1 22rem;
+	max-width: 22rem;
+	margin: 0;
+	overflow: hidden;
+	border-radius: 6px;
+	box-shadow: 0 18px 38px rgba(0, 0, 0, 0.30);
+}
+.cc-intel-feature img {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+	object-position: center;
+	display: block;
+}
+
+/* ---- Special bubble reveal -------------------------------------
+   For the two compare bubbles. Heavier entrance with a touch of
+   spring (cubic-bezier overshoot) so they feel placed rather than
+   slid in. Slightly longer duration than the default cc-reveal. */
+.cc-reveal--bubble {
+	opacity: 0;
+	transform: translateY(48px) scale(0.92) !important;
+	transition: opacity 1100ms cubic-bezier(0.34, 1.32, 0.64, 1),
+	            transform 1100ms cubic-bezier(0.34, 1.32, 0.64, 1) !important;
+}
+.cc-reveal--bubble.is-visible {
+	opacity: 1;
+	transform: none !important;
+}
+
+/* Chatbot bubble lands first; brand bubble lands second with extra
+   weight (later delay = punctuation, not a sequence). */
+.cc-compare.cc-reveal-group .cc-reveal--bubble:nth-child(1) { transition-delay: 0ms !important; }
+.cc-compare.cc-reveal-group .cc-reveal--bubble:nth-child(2) { transition-delay: 260ms !important; }
+
+/* Coda + image choreography. */
+.cc-intel-coda-grid > .cc-intel-coda.cc-reveal { transition-delay: 0ms !important; }
+.cc-intel-coda-grid > .cc-intel-feature.cc-reveal { transition-delay: 200ms !important; }
+
+/* Mobile: stack coda above photo. */
+@media (max-width: 900px) {
+	.cc-intel-coda-grid {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+}
+
+/* Reduced motion — flatten the bubble entrance. */
+@media (prefers-reduced-motion: reduce) {
+	.cc-reveal--bubble,
+	.cc-reveal--bubble.is-visible {
+		transform: none !important;
+		transition: none !important;
+		opacity: 1 !important;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — The Owner's View (Section 05)
+   • Left content: heading and body share a single max-width so
+     they wrap to the same right edge (left-aligned, unchanged
+     copy)
+   • Right side: photographic surface (opportunity1.jpg) with the
+     Conversion Intelligence Report as a floating overlay panel,
+     borrowing the System Live signal's spacing logic
+       — 60% of its previous width (≈ 40% smaller)
+       — left rule line, compact uppercase label, restrained list,
+         single footer line
+   • Artifact masthead trimmed: removed the top-right "Monthly"
+     stamp; footer trimmed: removed "Plain English"; remaining
+     line is "Delivered to the Principal, Monthly."
+   • Reveal choreography (matterofform-style sequence):
+       text from left      0 ms
+       photo from right  180 ms
+       artifact rises    420 ms (lifts onto the photo)
+---------------------------------------------------------------- */
+
+/* Heading + body share one max-width on the left side. The older
+   per-paragraph caps (38ch, 42ch) and h2 18-ch cap pulled them to
+   different right edges — neutralise inside this grid only. */
+.cc-report-grid > .cc-report-text {
+	max-width: 32rem;
+}
+.cc-report-grid > .cc-report-text h2 { max-width: none !important; }
+.cc-report-grid > .cc-report-text p,
+.cc-report-grid > .cc-report-text .cc-report-supporting,
+.cc-report-grid > .cc-report-text .cc-report-coda {
+	max-width: none !important;
+}
+
+/* Right side — photo + floating overlay artifact. */
+.cc-report-visual {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 3.4;     /* reserves space for the artifact's overhang */
+}
+.cc-report-visual__photo {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	margin: 0;
+	overflow: hidden;
+	border-radius: 6px;
+	box-shadow: 0 18px 38px rgba(27, 42, 86, 0.16);
+}
+.cc-report-visual__photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+/* Artifact restyled in the spirit of System Live (--integrated):
+   compact 14-rem panel with a soft cloud-white surface, left rule
+   line, tight uppercase label, restrained list, single footer line.
+   Sits as a floating overlay over the bottom-left of the photo. */
+.cc-report-visual .cc-report-artifact {
+	position: absolute;
+	left: -1rem;
+	bottom: -1.25rem;
+	width: 70%;
+	max-width: 16rem;
+	padding: 0.95rem 1.1rem 1rem 1.25rem;
+	background: var(--wp--preset--color--cloud-white);
+	border: 0;
+	border-left: 1px solid rgba(27, 42, 86, 0.18);
+	border-radius: 6px;
+	box-shadow: 0 22px 44px rgba(27, 42, 86, 0.18),
+	            0 1px 0 rgba(0, 0, 0, 0.04);
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+}
+
+/* Masthead: name + sub stack on a single side. Sized to System Live's
+   integrated label scale (0.6 rem, 0.18 em tracking). */
+.cc-report-visual .cc-report-artifact__masthead {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+.cc-report-visual .cc-report-artifact__name {
+	font-size: 0.6rem !important;
+	letter-spacing: 0.18em !important;
+}
+.cc-report-visual .cc-report-artifact__sub {
+	font-size: 0.55rem;
+	letter-spacing: 0.06em;
+}
+
+/* List: tighter rhythm (no inter-row hairlines, smaller numbers
+   and key text — matching System Live's 0.7-rem item size). */
+.cc-report-visual .cc-report-artifact__list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.32rem;
+}
+.cc-report-visual .cc-report-artifact__row {
+	grid-template-columns: 1.4rem 1fr;
+	gap: 0.6rem;
+	padding: 0;
+	border-bottom: 0;
+}
+.cc-report-visual .cc-report-artifact__num {
+	font-size: 0.55rem !important;
+	letter-spacing: 0.1em;
+}
+.cc-report-visual .cc-report-artifact__key {
+	font-size: 0.7rem !important;
+	font-weight: 500;
+	line-height: 1.35;
+}
+
+/* Footer: single line, left-aligned. Same scale as System Live's
+   meta row (0.55 rem, 0.18 em tracking). Hairline above for
+   visual separation. */
+.cc-report-visual .cc-report-artifact__footer {
+	margin-top: 0.25rem;
+	padding-top: 0.6rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.12);
+	justify-content: flex-start;
+	gap: 0;
+	font-size: 0.55rem;
+	letter-spacing: 0.18em;
+}
+
+/* Reveal — let the artifact rise into place from below the photo.
+   Reuses the existing --from-bottom modifier (defined earlier). */
+.cc-report-grid > .cc-report-text.cc-reveal     { transition-delay: 0ms !important; }
+.cc-report-visual .cc-report-visual__photo.cc-reveal { transition-delay: 180ms !important; }
+.cc-report-visual .cc-report-artifact.cc-reveal { transition-delay: 420ms !important; }
+
+/* Mobile: stack content above the visual; the artifact sits inline
+   below the photo rather than overlapping it. */
+@media (max-width: 900px) {
+	.cc-report-visual {
+		aspect-ratio: auto;
+	}
+	.cc-report-visual__photo {
+		position: static;
+		aspect-ratio: 16 / 10;
+	}
+	.cc-report-visual .cc-report-artifact {
+		position: static;
+		width: 100%;
+		max-width: none;
+		margin-top: 1rem;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — Built From Practice Reality (Section 06)
+   • New 50/50 intro grid above the founder row: photo on the left
+     (founders-hero.jpg / hero2.jpg), content on the right
+   • Outer width 1180 px so the panel aligns with the regulator
+     strip (AHPRA flush left → HIPAA flush right)
+   • Three founder portraits below are now uniformly sized
+     (identical width and height, locked aspect ratio)
+   • Plush hover: each portrait grows to the full column width
+     when interacted with (a width transition rather than a scale,
+     so the portraits never overlap their neighbours)
+   • Reveal choreography: photo from left, content from right,
+     three founders cascade with a slightly heavier beat
+---------------------------------------------------------------- */
+
+/* Top row — 50/50 intro grid. */
+.cc-founders-intro-grid {
+	max-width: 1180px;
+	margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(2rem, 5vw, 4.5rem);
+	align-items: center;
+}
+
+/* Photo on the left. */
+.cc-founders-intro__photo {
+	margin: 0;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	border-radius: 6px;
+	box-shadow: 0 18px 38px rgba(27, 42, 86, 0.10);
+}
+.cc-founders-intro__photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+/* Content on the right — strip the older centred 880-px wrapper,
+   neutralise the body's 60-ch / 62-ch caps, and let the heading
+   take the full column width. The italic body styling is preserved
+   from the existing rules; we don't touch the eyebrow. */
+.cc-founders-intro-grid .cc-founders-intro {
+	max-width: none;
+	margin: 0;
+}
+.cc-founders-intro-grid .cc-founders-intro h2 {
+	max-width: none;
+}
+.cc-founders-intro-grid .cc-founders-intro p {
+	max-width: none;
+	margin-bottom: 1rem;
+}
+.cc-founders-intro-grid .cc-founders-intro p:last-child {
+	margin-bottom: 0;
+}
+
+/* ---- Founder portraits — uniform sizing + plush hover ----------
+   Lock every portrait to the SAME absolute width (14 rem) so all
+   three render at identical dimensions regardless of column padding
+   asymmetry. The middle column has padding on both sides while the
+   edge columns are flush with the section, so a percentage-based
+   width would produce different sizes — a fixed rem value avoids
+   that.
+   On hover the portrait grows to 19 rem, the largest size that
+   still fits comfortably in the middle column (which has the
+   smallest content area). The bio below is pushed down smoothly
+   without disturbing the neighbouring columns. */
+.cc-founders .cc-founder__portrait {
+	width: 14rem;
+	max-width: 100%;
+	aspect-ratio: 4 / 5;
+	margin: 0 0 1.1rem;
+	overflow: hidden;
+	border-radius: 4px;
+	background: var(--wp--preset--color--ink-blue);
+	box-shadow: 0 14px 28px -18px rgba(27, 42, 86, 0.22);
+	transition: width 620ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 620ms cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: width;
+}
+.cc-founders .cc-founder__portrait > img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center top;
+	display: block;
+}
+.cc-founders .cc-founder:hover .cc-founder__portrait,
+.cc-founders .cc-founder:focus-within .cc-founder__portrait {
+	width: 19rem;
+	box-shadow: 0 28px 52px -22px rgba(27, 42, 86, 0.40);
+}
+
+/* The new bios are longer than the previous copy — open the bio
+   measure a little so the columns don't become awkwardly tall. */
+.cc-founders .cc-founder__bio {
+	max-width: none;
+	font-size: 0.875rem;
+	line-height: 1.65;
+}
+
+/* Reveal choreography. */
+.cc-founders-intro-grid > .cc-founders-intro__photo.cc-reveal { transition-delay: 0ms !important; }
+.cc-founders-intro-grid > .cc-founders-intro.cc-reveal       { transition-delay: 180ms !important; }
+
+/* Founder cascade: a slightly heavier beat (110 ms) so the three
+   portraits land deliberately, one after the other. */
+.cc-founders.cc-reveal-group .cc-reveal:nth-child(1) { transition-delay: 0ms !important; }
+.cc-founders.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 110ms !important; }
+.cc-founders.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 220ms !important; }
+
+/* Mobile: stack intro photo above content. */
+@media (max-width: 900px) {
+	.cc-founders-intro-grid {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+}
+
+/* Reduced motion — flatten the plush portrait grow. */
+@media (prefers-reduced-motion: reduce) {
+	.cc-founders .cc-founder__portrait,
+	.cc-founders .cc-founder:hover .cc-founder__portrait {
+		transition: none !important;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — The Commercial Case (Section 07)
+   • Solid Ink Blue ground replaced with a soft texture (texture2.jpg
+     — a defocused pale-blue medical interior). A faint cloud-white
+     overlay is layered on top so the texture is unmistakably present
+     but text legibility is constant.
+   • Type recoloured to Ink Blue across the panel. The eyebrow and
+     CTA no longer need their --on-dark variants.
+   • 50/50 grid: content on the left, three-image montage on the right
+     (moradi.jpg landscape primary, signature-photograph3.jpg portrait,
+     signature-photograph1.jpg secondary landscape).
+   • Coda hairline removed.
+   • Background parallax via modern animation-timeline: view() — the
+     texture pans gently as the section travels through the viewport.
+     Older browsers fall back to a static background.
+   • Reveal choreography: content from left, primary image from right,
+     portrait fades up, secondary slides in from the left.
+---------------------------------------------------------------- */
+
+/* ---- Section ground: solid Ink Blue (default) ------------------ */
+/* The previous texture + parallax layer was reverted; the section
+   uses its WP backgroundColor preset (ink-blue) as the ground.
+   Type colours follow the existing dark-ground rules from earlier
+   in the file (cloud-white headline, lighter copy). */
+
+/* Coda — drop italic + reduce size on the kicker headline. */
+.cc-section--investment .cc-invest__coda h3 {
+	font-style: normal;
+	font-weight: 500;
+	font-size: clamp(1rem, 1.85vw, 1.3rem);
+	line-height: 1.3;
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENT — The Founder Briefing (Section 08)
+   • 1180-px container (aligns with the regulator strip)
+   • Top hero band: 50/50 grid — founder-briefing photo on the
+     left (founderbrief1.jpg), intro text on the right
+   • Calendly inline embed below, full-width within the container,
+     so the booking widget gets first-class real estate
+   • Email fallback at the foot, centred
+   • Reveal choreography: photo from left, intro from right,
+     calendar fades up, email fades up last
+   • The photo carries an internal parallax (Ken Burns-ish) via
+     animation-timeline: view() — image translates inside its
+     overflow-hidden frame as the section travels through the
+     viewport, creating the "background movement" requested.
+---------------------------------------------------------------- */
+
+.cc-walk-grid {
+	max-width: 1180px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* Inside the new grid, set the typography to match the rest of the
+   site exactly. The previous pattern's .cc-walk parent class was
+   replaced by .cc-walk-grid in the restructure, so the global
+   section h2/p sizing rules (which target .cc-walk h2/p) no longer
+   match — re-apply the canonical scales here. */
+.cc-walk-grid .cc-walk__intro {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-width: none;
+}
+.cc-walk-grid .cc-walk__intro h2 {
+	max-width: none;
+	font-size: clamp(1.8rem, 3.7vw, 2.7rem);   /* matches every other section h2 */
+	line-height: 1.1;
+	margin: 0 0 0.5rem;
+}
+.cc-walk-grid .cc-walk__intro p {
+	max-width: none;
+	margin: 0;
+	font-size: clamp(0.875rem, 1.15vw, 0.975rem); /* matches global section body */
+	line-height: 1.55;
+	opacity: 1;
+}
+.cc-walk-grid .cc-walk__intro .cc-walk__supporting {
+	opacity: 0.82;
+}
+
+/* ---- Top hero band — 50/50 grid ------------------------------- */
+
+.cc-walk-grid__hero {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(2rem, 5vw, 4.5rem);
+	align-items: center;
+}
+
+/* Photo — overflow:hidden so the inner image can translate during
+   parallax without bleeding past the frame. */
+.cc-walk__photo {
+	margin: 0;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	border-radius: 6px;
+	box-shadow: 0 18px 38px rgba(27, 42, 86, 0.10);
+}
+.cc-walk__photo img {
+	width: 100%;
+	height: 110%;          /* slight overscan so parallax shift never reveals an edge */
+	object-fit: cover;
+	display: block;
+	transform: translateY(-5%);
+	will-change: transform;
+}
+
+/* Modern scroll-driven parallax. Falls back to a static image in
+   browsers without animation-timeline support. */
+@supports (animation-timeline: view()) {
+	.cc-walk__photo img {
+		animation: cc-walk-photo-parallax linear;
+		animation-timeline: view();
+		animation-range: cover;
+	}
+	@keyframes cc-walk-photo-parallax {
+		from { transform: translateY(-9%); }
+		to   { transform: translateY( 0%); }
+	}
+}
+
+/* ---- Calendly embed ------------------------------------------- */
+
+.cc-walk__calendly {
+	width: 100%;
+	max-width: 720px;      /* tighter — the widget no longer dominates */
+	margin: 0 auto;
+	background: var(--wp--preset--color--cloud-white);
+	border: 1px solid rgba(27, 42, 86, 0.12);
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 18px 38px rgba(27, 42, 86, 0.08);
+}
+/* The Calendly widget itself sets its own internal sizing via the
+   inline data-url + height attribute on its container. We give it
+   a min-height fallback for the brief moment before the script
+   loads so the section doesn't visibly jump. */
+.cc-walk__calendly .calendly-inline-widget {
+	min-height: 600px;
+}
+
+/* ---- Email fallback ------------------------------------------- */
+
+.cc-walk-grid > .cc-walk__email {
+	max-width: 720px;
+	margin: 0 auto;
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--wp--preset--color--mute);
+	padding-top: 1.25rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.08);
+}
+.cc-walk-grid > .cc-walk__email a {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom: 1px solid rgba(27, 42, 86, 0.3);
+	text-decoration: none;
+	padding-bottom: 1px;
+	transition: border-color 200ms ease;
+}
+.cc-walk-grid > .cc-walk__email a:hover {
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+}
+
+/* ---- Reveal choreography -------------------------------------- */
+
+.cc-walk-grid__hero > .cc-walk__photo.cc-reveal { transition-delay: 0ms !important; }
+.cc-walk-grid__hero > .cc-walk__intro.cc-reveal { transition-delay: 180ms !important; }
+.cc-walk-grid > .cc-walk__calendly.cc-reveal     { transition-delay: 360ms !important; }
+.cc-walk-grid > .cc-walk__email.cc-reveal        { transition-delay: 520ms !important; }
+
+/* Mobile: hero stacks (photo on top, intro below). Calendly
+   widget shrinks to viewport width; email line stays centred. */
+@media (max-width: 900px) {
+	.cc-walk-grid__hero {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+	.cc-walk__photo {
+		max-width: 36rem;
+		margin: 0 auto;
+	}
+}
+
+/* Reduced motion — flatten the photo parallax. */
+@media (prefers-reduced-motion: reduce) {
+	.cc-walk__photo img {
+		animation: none !important;
+		transform: none !important;
+		height: 100% !important;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL — Request the Deck (Section 05b, between Report and Founders)
+   • 1180-px container (aligns with the credibility / regulator strip)
+   • Two columns:
+       LEFT: editorial copy + six "what the deck shows" points
+       RIGHT: deck.jpg as the dominant visual + a request form card
+   • The form sits below the deck artwork (with a small upward
+     offset so it overlaps the artwork's lower edge), giving the
+     "private briefing on a principal's desk" feel
+   • Reveal choreography:
+       eyebrow      0 ms
+       headline   140 ms
+       body       240 ms
+       points cascade (90 ms beats inside the cc-reveal-group)
+       artwork    after the copy (slow editorial reveal)
+       form card  last
+   • Calm, sequential, editorial — no bouncing, no spinners that
+     feel like a webinar funnel.
+---------------------------------------------------------------- */
+
+.cc-deck-grid {
+	max-width: 1180px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(2rem, 5vw, 4.5rem);
+	align-items: start;
+}
+
+/* ---- Left column: copy + promise points ----------------------- */
+
+.cc-deck__copy {
+	display: flex;
+	flex-direction: column;
+	gap: 1.4rem;
+}
+.cc-deck__headline {
+	font-size: clamp(1.8rem, 3.7vw, 2.7rem) !important;
+	line-height: 1.1 !important;
+	margin: 0;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-deck__body {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+.cc-deck__body p {
+	margin: 0;
+	font-size: clamp(0.875rem, 1.15vw, 0.975rem);
+	line-height: 1.55;
+	color: var(--wp--preset--color--ink-blue);
+}
+
+/* Six promise points — number on the left, title + body on the right. */
+.cc-deck-points {
+	list-style: none;
+	margin: 1rem 0 0;
+	padding: 0;
+	border-top: 1px solid rgba(27, 42, 86, 0.12);
+	display: flex;
+	flex-direction: column;
+}
+.cc-deck-points__item {
+	display: grid;
+	grid-template-columns: 2.4rem 1fr;
+	gap: 1rem;
+	padding: 1.1rem 0;
+	border-bottom: 1px solid rgba(27, 42, 86, 0.08);
+	transition: background-color 280ms ease;
+}
+.cc-deck-points__item:last-child {
+	border-bottom: 0;
+}
+.cc-deck-points__item:hover {
+	background-color: rgba(27, 42, 86, 0.025);
+}
+.cc-deck-points__num {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.7rem;
+	letter-spacing: 0.18em;
+	font-weight: 700;
+	color: var(--wp--preset--color--eucalyptus);
+	padding-top: 0.2rem;
+}
+.cc-deck-points__title {
+	margin: 0 0 0.35rem;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.95rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	color: var(--wp--preset--color--ink-blue);
+	line-height: 1.3;
+}
+.cc-deck-points__body {
+	margin: 0;
+	font-size: 0.825rem;
+	line-height: 1.55;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.85;
+}
+
+.cc-deck__supporting {
+	margin: 1rem 0 0;
+	font-size: 0.95rem;
+	line-height: 1.55;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.92;
+	font-style: italic;
+}
+.cc-deck__microcopy {
+	margin: 0;
+	font-size: 0.7rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	font-weight: 600;
+	color: var(--wp--preset--color--mute);
+}
+
+/* ---- Right column: deck artwork + form ------------------------ */
+
+.cc-deck__visual {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.cc-deck__artwork {
+	margin: 0;
+	width: 100%;
+	overflow: hidden;
+	border-radius: 8px;
+	box-shadow: 0 22px 44px rgba(27, 42, 86, 0.18);
+	transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-deck__artwork img {
+	width: 100%;
+	height: auto;
+	display: block;
+	object-fit: contain;
+}
+/* Subtle plush lift on hover — like the deck being lifted from
+   the desk. Nothing flapping. */
+.cc-deck__artwork:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 28px 56px rgba(27, 42, 86, 0.24);
+}
+
+/* Form card — slightly overlaps the artwork's bottom edge so the
+   pair reads as one composition (artwork + the action attached
+   to it). */
+.cc-deck-form {
+	background: var(--wp--preset--color--cloud-white);
+	border: 1px solid rgba(27, 42, 86, 0.10);
+	border-radius: 10px;
+	padding: 1.6rem 1.6rem 1.4rem;
+	margin-top: -2.5rem;     /* the overlap */
+	box-shadow: 0 22px 44px rgba(27, 42, 86, 0.10);
+	position: relative;
+	z-index: 2;
+}
+
+.cc-deck-form__masthead {
+	margin: 0 0 1.1rem;
+	padding: 0 0 0.95rem;
+	border-bottom: 1px solid rgba(27, 42, 86, 0.10);
+}
+.cc-deck-form__label {
+	margin: 0 0 0.35rem;
+	font-size: 0.6rem;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	font-weight: 700;
+	color: var(--wp--preset--color--eucalyptus);
+}
+.cc-deck-form__title {
+	margin: 0 0 0.4rem;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 1.1rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	line-height: 1.25;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-deck-form__intro {
+	margin: 0;
+	font-size: 0.825rem;
+	line-height: 1.55;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.82;
+}
+
+/* Form fields — refined editorial inputs, not SaaS chrome. */
+.cc-deck-form__form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+}
+.cc-deck-form__row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.8rem;
+}
+.cc-deck-form__field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+}
+.cc-deck-form__field label {
+	font-size: 0.62rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	font-weight: 700;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.75;
+}
+.cc-deck-form__required {
+	color: var(--wp--preset--color--eucalyptus);
+	margin-left: 0.2em;
+}
+.cc-deck-form__field input,
+.cc-deck-form__field select {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.6rem 0.75rem;
+	font: inherit;
+	font-size: 0.85rem;
+	color: var(--wp--preset--color--ink-blue);
+	background: var(--wp--preset--color--cloud-white);
+	border: 1px solid rgba(27, 42, 86, 0.18);
+	border-radius: 6px;
+	min-height: 42px;
+	transition: border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+}
+.cc-deck-form__field select {
+	appearance: none;
+	-webkit-appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231B2A56' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.85rem center;
+	background-size: 0.7rem;
+	padding-right: 2rem;
+}
+.cc-deck-form__field input::placeholder {
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.45;
+}
+.cc-deck-form__field input:focus,
+.cc-deck-form__field select:focus {
+	outline: none;
+	border-color: var(--wp--preset--color--eucalyptus);
+	box-shadow: 0 0 0 3px rgba(127, 192, 172, 0.22);
+}
+.cc-deck-form__field input:invalid:not(:placeholder-shown),
+.cc-deck-form__field select:invalid:not(:focus) {
+	/* No alarmist red — keep it calm; flag only on submit attempts. */
+}
+
+.cc-deck-form__error {
+	margin: 0;
+	font-size: 0.78rem;
+	line-height: 1.45;
+	color: #B23A3A;
+	min-height: 0;
+	opacity: 0;
+	transition: opacity 200ms ease;
+}
+.cc-deck-form__error.is-visible {
+	opacity: 1;
+	min-height: 1.2em;
+}
+
+/* Submit button — uses primary CCButton language so it matches the
+   rest of the site. Spinner appears during submit. */
+.cc-deck-form__submit {
+	margin-top: 0.4rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	cursor: pointer;
+	transition: opacity 200ms ease;
+}
+.cc-deck-form__submit[disabled] {
+	cursor: progress;
+	opacity: 0.7;
+}
+.cc-deck-form__submit-spinner {
+	width: 0.85rem;
+	height: 0.85rem;
+	border: 2px solid rgba(255, 255, 255, 0.25);
+	border-top-color: currentColor;
+	border-radius: 50%;
+	display: none;
+	animation: cc-deck-spin 0.7s linear infinite;
+}
+.cc-deck-form__submit.is-submitting .cc-deck-form__submit-spinner {
+	display: inline-block;
+}
+@keyframes cc-deck-spin {
+	to { transform: rotate(360deg); }
+}
+
+.cc-deck-form__consent,
+.cc-deck-form__trust {
+	margin: 0.65rem 0 0;
+	font-size: 0.7rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--mute);
+}
+.cc-deck-form__trust {
+	font-style: italic;
+	opacity: 0.85;
+}
+
+/* Thank-you / Other states — same card surface, different content. */
+.cc-deck-form__state[hidden] {
+	display: none;
+}
+.cc-deck-form__thanks-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+	margin: 0 0 1.3rem;
+}
+.cc-deck-form__thanks-body p {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.6;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-deck-form__download {
+	display: inline-flex;
+	margin-bottom: 0.85rem;
+}
+.cc-deck-form__secondary {
+	display: inline-flex;
+}
+.cc-deck-form__microcopy {
+	margin: 0.85rem 0 0;
+	font-size: 0.78rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--mute);
+	font-style: italic;
+}
+
+/* ---- Reveal choreography -------------------------------------- */
+
+/* Editorial sequence on the left column. */
+.cc-deck__copy > .cc-eyebrow.cc-reveal      { transition-delay: 0ms !important; }
+.cc-deck__copy > .cc-deck__headline.cc-reveal { transition-delay: 140ms !important; }
+.cc-deck__copy > .cc-deck__body.cc-reveal   { transition-delay: 240ms !important; }
+
+/* Promise points cascade with a 90 ms beat. */
+.cc-deck-points.cc-reveal-group .cc-reveal:nth-child(1) { transition-delay: 0ms   !important; }
+.cc-deck-points.cc-reveal-group .cc-reveal:nth-child(2) { transition-delay: 90ms  !important; }
+.cc-deck-points.cc-reveal-group .cc-reveal:nth-child(3) { transition-delay: 180ms !important; }
+.cc-deck-points.cc-reveal-group .cc-reveal:nth-child(4) { transition-delay: 270ms !important; }
+.cc-deck-points.cc-reveal-group .cc-reveal:nth-child(5) { transition-delay: 360ms !important; }
+.cc-deck-points.cc-reveal-group .cc-reveal:nth-child(6) { transition-delay: 450ms !important; }
+
+/* Right column — artwork enters first (slow editorial reveal),
+   form card lands last with a quieter beat. */
+.cc-deck__visual > .cc-deck__artwork.cc-reveal { transition-delay: 220ms !important; }
+.cc-deck__visual > .cc-deck-form.cc-reveal     { transition-delay: 460ms !important; }
+
+/* ---- Responsive ------------------------------------------------ */
+
+@media (max-width: 1024px) {
+	.cc-deck-grid {
+		grid-template-columns: 1fr;
+		gap: 2.5rem;
+	}
+	.cc-deck-form {
+		margin-top: -1.5rem;
+	}
+}
+
+@media (max-width: 600px) {
+	.cc-deck-form__row {
+		grid-template-columns: 1fr;
+	}
+	.cc-deck-form {
+		margin-top: -1rem;
+		padding: 1.25rem 1.1rem 1.1rem;
+	}
+	.cc-deck-points__item {
+		grid-template-columns: 1.8rem 1fr;
+		gap: 0.75rem;
+	}
+}
+
+/* Reduced motion — flatten the deck artwork lift hover. */
+@media (prefers-reduced-motion: reduce) {
+	.cc-deck__artwork,
+	.cc-deck__artwork:hover {
+		transition: none !important;
+		transform: none !important;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   PANEL REFINEMENTS — Founders contact icons + Footer + Legal modal
+   • Founders: LinkedIn + email icon links sit beside each name in
+     a small inline list (.cc-founder__heading wraps name + icons)
+   • Footer: tidied hierarchy, hairline divider, link buttons that
+     open the legal modal in place
+   • Legal modal: full-screen overlay with a centred panel, content
+     populated from <template data-cc-legal-doc="..."> elements
+---------------------------------------------------------------- */
+
+/* ---- Founder contact icons ------------------------------------ */
+
+.cc-founder__heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+.cc-founder__heading .cc-founder__name {
+	margin: 0;
+}
+.cc-founder__contact {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: inline-flex;
+	gap: 0.5rem;
+}
+.cc-founder__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 4px;
+	background: transparent;
+	transition: background-color 220ms ease, transform 220ms ease;
+}
+.cc-founder__icon img {
+	width: 1.35rem;
+	height: 1.35rem;
+	display: block;
+	opacity: 0.7;
+	transition: opacity 220ms ease;
+}
+.cc-founder__icon:hover {
+	background-color: rgba(27, 42, 86, 0.06);
+	transform: translateY(-1px);
+}
+.cc-founder__icon:hover img,
+.cc-founder__icon:focus-visible img {
+	opacity: 1;
+}
+
+/* ---- Footer tidy ---------------------------------------------- */
+
+.cc-footer-grid,
+.cc-footer__bottom {
+	max-width: 1180px;
+	margin: 0 auto;
+	padding-left: var(--cc-content-x);
+	padding-right: var(--cc-content-x);
+	/* Identical column template on both rows so the legal block in
+	   the top row's right column lands at the same x as the links
+	   nav in the bottom row — the user wants "CareConcierge Pty Ltd"
+	   aligned with "Privacy". 35rem (≈ 560 px) fits the wider of
+	   the two right-column contents (links nav, ~542 px) with a
+	   small buffer; legal stretches to the same column width. */
+	display: grid !important;
+	grid-template-columns: 1fr 35rem !important;
+	column-gap: clamp(2rem, 5vw, 4rem);
+	align-items: start;
+}
+.cc-footer__bottom {
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid rgba(229, 232, 228, 0.08);
+	row-gap: 0.65rem;
+	font-size: 0.7rem;
+	letter-spacing: 0.02em;
+	color: rgba(229, 232, 228, 0.55);
+}
+/* Right-column content (legal in top row, links in bottom row)
+   left-aligns to its column start. That column start is the same
+   for both rows, so "CareConcierge Pty Ltd" and "Privacy" share
+   one left edge. */
+.cc-footer__bottom > .cc-footer__copyright { align-self: center; }
+.cc-footer__bottom > .cc-footer__links     { align-self: center; justify-self: start; }
+.cc-footer__copyright {
+	margin: 0;
+}
+.cc-footer__links {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem 0.75rem;
+}
+.cc-footer__link {
+	background: transparent;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	color: rgba(229, 232, 228, 0.65);
+	cursor: pointer;
+	letter-spacing: 0.04em;
+	text-transform: none;
+	transition: color 200ms ease;
+}
+.cc-footer__link:hover,
+.cc-footer__link:focus-visible {
+	color: var(--wp--preset--color--cloud-white);
+	outline: none;
+}
+.cc-footer__sep {
+	color: rgba(229, 232, 228, 0.25);
+}
+.cc-footer__entity {
+	font-weight: 600;
+}
+.cc-footer__brand p,
+.cc-footer__legal p {
+	margin: 0 0 0.3rem;
+	font-size: 0.75rem;
+	line-height: 1.55;
+	color: rgba(229, 232, 228, 0.65);
+}
+.cc-footer__brand .cc-footer__tagline {
+	margin-top: 0.5rem;
+	color: rgba(229, 232, 228, 0.78);
+	font-size: 0.78rem;
+}
+.cc-footer__contact a {
+	color: var(--wp--preset--color--cloud-white);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(229, 232, 228, 0.3);
+	padding-bottom: 1px;
+	transition: border-color 200ms ease;
+}
+.cc-footer__contact a:hover {
+	border-bottom-color: var(--wp--preset--color--cloud-white);
+}
+
+/* ---- Legal modal ---------------------------------------------- */
+
+.cc-legal-modal[hidden] {
+	display: none;
+}
+.cc-legal-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 200;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(1rem, 4vw, 2rem);
+}
+.cc-legal-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(27, 42, 86, 0.62);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	animation: cc-legal-fade 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-legal-modal__panel {
+	position: relative;
+	background: var(--wp--preset--color--cloud-white);
+	border-radius: 10px;
+	max-width: 760px;
+	width: 100%;
+	max-height: 86vh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	box-shadow: 0 30px 80px rgba(27, 42, 86, 0.32);
+	animation: cc-legal-rise 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cc-legal-modal__masthead {
+	position: relative;
+	padding: 1.4rem 3rem 1.1rem 1.6rem;
+	border-bottom: 1px solid rgba(27, 42, 86, 0.10);
+	background: var(--wp--preset--color--cloud-white);
+}
+.cc-legal-modal__eyebrow {
+	margin: 0 0 0.3rem;
+	font-size: 0.6rem;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	font-weight: 700;
+	color: var(--wp--preset--color--eucalyptus);
+}
+.cc-legal-modal__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 1.15rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--ink-blue);
+	letter-spacing: -0.005em;
+}
+.cc-legal-modal__close {
+	position: absolute;
+	top: 0.85rem;
+	right: 0.85rem;
+	width: 2rem;
+	height: 2rem;
+	border: 0;
+	background: transparent;
+	color: var(--wp--preset--color--ink-blue);
+	font-size: 1.6rem;
+	line-height: 1;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background-color 180ms ease;
+}
+.cc-legal-modal__close:hover,
+.cc-legal-modal__close:focus-visible {
+	background-color: rgba(27, 42, 86, 0.06);
+	outline: none;
+}
+.cc-legal-modal__body {
+	overflow-y: auto;
+	padding: 1.4rem 1.6rem 1.6rem;
+	color: var(--wp--preset--color--ink-blue);
+	-webkit-overflow-scrolling: touch;
+}
+.cc-legal-modal__body h3 {
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.85rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	margin: 1.5rem 0 0.55rem;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-legal-modal__body h3:first-of-type {
+	margin-top: 0.5rem;
+}
+.cc-legal-modal__body p {
+	margin: 0 0 0.85rem;
+	font-size: 0.82rem;
+	line-height: 1.6;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.92;
+}
+.cc-legal-modal__body a {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom: 1px solid rgba(27, 42, 86, 0.3);
+	padding-bottom: 1px;
+	text-decoration: none;
+	transition: border-color 180ms ease;
+}
+.cc-legal-modal__body a:hover {
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+}
+.cc-legal-doc__meta {
+	margin: 0 0 1rem !important;
+	font-size: 0.75rem !important;
+	opacity: 0.7;
+}
+body.cc-legal-open {
+	overflow: hidden;        /* lock scroll while modal is open */
+}
+
+@keyframes cc-legal-fade {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+@keyframes cc-legal-rise {
+	from { opacity: 0; transform: translateY(16px) scale(0.985); }
+	to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.cc-legal-modal__backdrop,
+	.cc-legal-modal__panel {
+		animation: none !important;
+	}
+}
+
+/* Mobile: legal links wrap onto a separate line and the panel
+   takes more screen estate. */
+@media (max-width: 600px) {
+	.cc-footer__bottom {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.cc-legal-modal__masthead {
+		padding: 1.1rem 2.5rem 1rem 1.1rem;
+	}
+	.cc-legal-modal__body {
+		padding: 1.1rem;
+	}
+}
+
+
+/* ----------------------------------------------------------------
+   HEADER ALIGNMENT — match the hero panel's outer edges
+   The earlier "edge inset halving" rules (lines ~2313 and ~2577)
+   left the header padding at ~6.75 px, far inside the hero panel's
+   left edge (which sits at ~58 px from viewport on a 1512-px screen).
+   Hero panel positioning is produced by:
+     • main has-global-padding → 1rem padding each side
+     • .cc-section { max-width: calc(640px + 50vw) } centred via
+       margin: 0 auto inside main's content area
+   We mirror that exactly on the header so wordmark.left and
+   nav.last.right land on the same x-coordinates as the hero panel
+   left/right at every viewport.
+---------------------------------------------------------------- */
+.cc-site-header {
+	padding-left: var(--wp--style--root--padding-left, 1rem) !important;
+	padding-right: var(--wp--style--root--padding-right, 1rem) !important;
+}
+.cc-site-header > .wp-block-group {
+	max-width: calc(640px + 50vw) !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	width: 100%;
+}
+
+/* ---- Layout: 50/50 grid --------------------------------------- */
+
+.cc-invest-grid {
+	max-width: 1180px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(2rem, 5vw, 4.5rem);
+	align-items: center;
+}
+
+/* Inside the grid, neutralise the older centred 880-px wrapper.
+   Coda hairline removed entirely (the user asked for this). */
+.cc-invest-grid .cc-invest {
+	max-width: none;
+	margin: 0;
+}
+.cc-invest-grid .cc-invest__coda {
+	border-top: none;
+	padding-top: 0;
+	margin-top: 0.75rem;
+}
+.cc-invest-grid .cc-invest h2 { max-width: none; }
+.cc-invest-grid .cc-invest__copy,
+.cc-invest-grid .cc-invest__us,
+.cc-invest-grid .cc-invest__coda h3,
+.cc-invest-grid .cc-invest__coda p { max-width: none; }
+
+/* ---- Right-column montage ------------------------------------- */
+
+.cc-invest__visual {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 4.2;       /* reserves room for the overhang */
+}
+.cc-invest__photo {
+	margin: 0;
+	overflow: hidden;
+	border-radius: 8px;
+	box-shadow: 0 22px 44px rgba(27, 42, 86, 0.22),
+	            0 1px 0 rgba(0, 0, 0, 0.04);
+}
+.cc-invest__photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	display: block;
+}
+
+/* Primary landscape (moradi.jpg) — top-right, the anchor image. */
+.cc-invest__photo--main {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 82%;
+	aspect-ratio: 4 / 3;
+}
+/* Portrait (signature-photograph3.jpg) — bottom-right, overlapping the
+   landscape's bottom-right corner like a punctuation. */
+.cc-invest__photo--portrait {
+	position: absolute;
+	bottom: 0;
+	right: 8%;
+	width: 36%;
+	aspect-ratio: 3 / 4;
+}
+/* Secondary landscape (signature-photograph1.jpg) — sits below
+   the main Moradi landscape, immediately to the left of the
+   woman portrait, completing the trio composition along the
+   bottom row. Slightly larger than the previous attempt. */
+.cc-invest__photo--secondary {
+	position: absolute;
+	bottom: 8%;
+	left: 12%;
+	width: 40%;
+	aspect-ratio: 4 / 3;
+}
+
+/* ---- Reveal choreography -------------------------------------- */
+
+.cc-invest-grid > .cc-invest.cc-reveal               { transition-delay: 0ms !important; }
+.cc-invest__visual .cc-invest__photo--main.cc-reveal      { transition-delay: 180ms !important; }
+.cc-invest__visual .cc-invest__photo--portrait.cc-reveal  { transition-delay: 380ms !important; }
+.cc-invest__visual .cc-invest__photo--secondary.cc-reveal { transition-delay: 560ms !important; }
+
+/* Mobile: stack content above the visual. */
+@media (max-width: 900px) {
+	.cc-invest-grid {
+		grid-template-columns: 1fr;
+		gap: 2.5rem;
+	}
+	.cc-invest__visual {
+		max-width: 36rem;
+		margin: 0 auto;
+	}
 }
 

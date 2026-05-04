@@ -149,4 +149,168 @@
 
 		revealEls.forEach(function (el) { revealObserver.observe(el); });
 	}
+
+	/* ----------------------------------------------------------------
+	 * 5) Accordion (.cc-faq__item) — click summary to toggle.
+	 *    Uses a data-cc-open attribute on the item; the smooth
+	 *    height transition is driven by CSS (grid-template-rows
+	 *    0fr ↔ 1fr). aria-expanded is mirrored for assistive tech.
+	 * ---------------------------------------------------------------- */
+	var faqItems = Array.prototype.slice.call(document.querySelectorAll(".cc-faq__item"));
+	faqItems.forEach(function (item) {
+		var summary = item.querySelector(".cc-faq__summary");
+		if (!summary) { return; }
+		summary.addEventListener("click", function () {
+			var isOpen = item.getAttribute("data-cc-open") === "true";
+			item.setAttribute("data-cc-open", isOpen ? "false" : "true");
+			summary.setAttribute("aria-expanded", isOpen ? "false" : "true");
+		});
+	});
+
+	/* ----------------------------------------------------------------
+	 * 6) Deck-request form — AJAX submit to wp-admin/admin-ajax.php
+	 *    On success, swap the form state to thanks/other and reveal
+	 *    the dynamic deck download CTA. No page jump.
+	 * ---------------------------------------------------------------- */
+	var deckCard = document.querySelector(".cc-deck-form");
+	if (deckCard && window.CCDeck && window.CCDeck.ajaxUrl) {
+		var deckForm  = deckCard.querySelector("form");
+		var pageUrlIn = deckCard.querySelector('input[name="cc_deck_page_url"]');
+		if (pageUrlIn) { pageUrlIn.value = window.location.href; }
+
+		var setState = function (state) {
+			Array.prototype.forEach.call(
+				deckCard.querySelectorAll(".cc-deck-form__state"),
+				function (panel) {
+					var match = panel.getAttribute("data-cc-state") === state;
+					if (match) {
+						panel.removeAttribute("hidden");
+					} else {
+						panel.setAttribute("hidden", "");
+					}
+				}
+			);
+		};
+
+		var setError = function (message) {
+			var errEl = deckCard.querySelector(".cc-deck-form__error");
+			if (errEl) {
+				errEl.textContent = message || "";
+				errEl.classList.toggle("is-visible", !!message);
+			}
+		};
+
+		var setSubmitting = function (isSubmitting) {
+			var btn = deckCard.querySelector(".cc-deck-form__submit");
+			if (!btn) { return; }
+			btn.disabled = !!isSubmitting;
+			btn.classList.toggle("is-submitting", !!isSubmitting);
+		};
+
+		if (deckForm) {
+			deckForm.addEventListener("submit", function (event) {
+				event.preventDefault();
+				setError("");
+
+				// Native HTML5 validation pass before we go to the network.
+				if (!deckForm.checkValidity()) {
+					setError("Please complete every required field.");
+					deckForm.reportValidity();
+					return;
+				}
+
+				var fd = new FormData(deckForm);
+				fd.append("action", "cc_deck_request");
+
+				setSubmitting(true);
+				fetch(window.CCDeck.ajaxUrl, {
+					method: "POST",
+					body: fd,
+					credentials: "same-origin",
+				})
+					.then(function (res) { return res.json().catch(function () { return { success: false, data: { message: "Unexpected server response." } }; }); })
+					.then(function (json) {
+						if (!json || json.success !== true) {
+							var msg = (json && json.data && json.data.message) || "Submission failed. Please try again.";
+							setError(msg);
+							setSubmitting(false);
+							return;
+						}
+						setSubmitting(false);
+
+						var d = json.data || {};
+						if (d.state === "thanks" && d.deckUrl) {
+							var link  = deckCard.querySelector("[data-cc-deck-link]");
+							var label = deckCard.querySelector("[data-cc-deck-label]");
+							if (link)  { link.setAttribute("href", d.deckUrl); }
+							if (label && d.marketLabel) { label.textContent = "Download the " + d.marketLabel + " deck"; }
+							setState("thanks");
+						} else {
+							setState("other");
+						}
+
+						// Soft scroll to keep the new state in view, but only
+						// if the card is currently above the viewport's top.
+						var cardRect = deckCard.getBoundingClientRect();
+						if (cardRect.top < 0) {
+							deckCard.scrollIntoView({ behavior: "smooth", block: "start" });
+						}
+					})
+					.catch(function () {
+						setSubmitting(false);
+						setError("Network error. Please try again.");
+					});
+			});
+		}
+	}
+
+	/* ----------------------------------------------------------------
+	 * 7) Legal modal — opens privacy / terms / DPA / BAA in-page
+	 *    rather than navigating away. Content is sourced from the
+	 *    <template data-cc-legal-doc="..."> elements inside the
+	 *    footer pattern. Closes on backdrop click, Esc, or × button.
+	 * ---------------------------------------------------------------- */
+	var legalModal = document.querySelector("[data-cc-legal-modal]");
+	if (legalModal) {
+		var legalTitle = legalModal.querySelector("#cc-legal-modal-title");
+		var legalBody  = legalModal.querySelector("[data-cc-legal-body]");
+		var legalPanel = legalModal.querySelector(".cc-legal-modal__panel");
+		var lastTrigger = null;
+
+		var openLegal = function (slug) {
+			var tpl = document.querySelector('template[data-cc-legal-doc="' + slug + '"]');
+			if (!tpl) { return; }
+			if (legalTitle) { legalTitle.textContent = tpl.getAttribute("data-cc-legal-title") || ""; }
+			if (legalBody)  {
+				legalBody.innerHTML = "";
+				legalBody.appendChild(tpl.content.cloneNode(true));
+				legalBody.scrollTop = 0;
+			}
+			legalModal.removeAttribute("hidden");
+			document.body.classList.add("cc-legal-open");
+			if (legalPanel) { legalPanel.focus(); }
+		};
+		var closeLegal = function () {
+			legalModal.setAttribute("hidden", "");
+			document.body.classList.remove("cc-legal-open");
+			if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
+		};
+
+		Array.prototype.forEach.call(
+			document.querySelectorAll("[data-cc-legal-open]"),
+			function (btn) {
+				btn.addEventListener("click", function () {
+					lastTrigger = btn;
+					openLegal(btn.getAttribute("data-cc-legal-open"));
+				});
+			}
+		);
+		Array.prototype.forEach.call(
+			legalModal.querySelectorAll("[data-cc-legal-close]"),
+			function (el) { el.addEventListener("click", closeLegal); }
+		);
+		document.addEventListener("keydown", function (event) {
+			if (event.key === "Escape" && !legalModal.hasAttribute("hidden")) { closeLegal(); }
+		});
+	}
 })();

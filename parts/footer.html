@@ -1,14 +1,15 @@
 <!-- wp:group {"tagName":"div","className":"cc-footer","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","right":"0","bottom":"var:preset|spacing|50","left":"0"}}},"backgroundColor":"ink-blue","textColor":"cloud-white","layout":{"type":"constrained","contentSize":"100%","wideSize":"100%"}} -->
 <div class="wp-block-group cc-footer has-cloud-white-color has-ink-blue-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:0;padding-bottom:var(--wp--preset--spacing--50);padding-left:0">
 	<!-- wp:html -->
-	<div class="cc-footer-grid" style="padding-left: var(--cc-content-x); padding-right: var(--cc-content-x);">
+	<div class="cc-footer-grid">
 		<div class="cc-footer__brand">
-			<p>CareConcierge — patient communication infrastructure for private elective practice.</p>
-			<p class="cc-footer__contact"><a href="mailto:care@careconcierge.health">care@careconcierge.health</a></p>
+			<img class="cc-footer__wordmark" src="/wp-content/themes/careconcierge/assets/images/brand/careconcierge-logo-white.svg" alt="CareConcierge" width="220" height="26" />
+			<p class="cc-footer__tagline">Patient communication infrastructure for private elective practice.</p>
+			<p class="cc-footer__contact"><a href="mailto:care@careconcierge.health?subject=Website%20Enquiry%20from%20CareConcierge%20Site">care@careconcierge.health</a></p>
 		</div>
 		<div class="cc-footer__legal">
-			<p>CareConcierge Pty Ltd</p>
-			<p>ACN 697 228 783 · ABN 79 697 228 783</p>
+			<p class="cc-footer__entity">CareConcierge Pty Ltd</p>
+			<p>ACN 697 228 783 &middot; ABN 79 697 228 783</p>
 			<p>PO Box 944, Paradise Point, Queensland 4216, Australia</p>
 			<p>United Kingdom and United States operations available</p>
 		</div>
@@ -16,10 +17,120 @@
 	<!-- /wp:html -->
 
 	<!-- wp:html -->
-	<div class="cc-footer__bottom" style="padding-left: var(--cc-content-x); padding-right: var(--cc-content-x);">
-		<p>© 2026 CareConcierge Pty Ltd. All rights reserved.</p>
-		<p>Privacy · Terms · Data Processing Addendum (UK) · Business Associate Agreement (US)</p>
+	<div class="cc-footer__bottom">
+		<p class="cc-footer__copyright">&copy; 2026 CareConcierge Pty Ltd. All rights reserved.</p>
+		<nav class="cc-footer__links" aria-label="Legal">
+			<button type="button" class="cc-footer__link" data-cc-legal-open="privacy">Privacy</button>
+			<span class="cc-footer__sep" aria-hidden="true">&middot;</span>
+			<button type="button" class="cc-footer__link" data-cc-legal-open="terms">Terms</button>
+			<span class="cc-footer__sep" aria-hidden="true">&middot;</span>
+			<button type="button" class="cc-footer__link" data-cc-legal-open="dpa">Data Processing Addendum (UK)</button>
+			<span class="cc-footer__sep" aria-hidden="true">&middot;</span>
+			<button type="button" class="cc-footer__link" data-cc-legal-open="baa">Business Associate Agreement (US)</button>
+		</nav>
 	</div>
+	<!-- /wp:html -->
+
+	<!-- Legal modal — populated via JS from the data-cc-legal-doc panels below. -->
+	<!-- wp:html -->
+	<div class="cc-legal-modal" data-cc-legal-modal hidden role="dialog" aria-modal="true" aria-labelledby="cc-legal-modal-title">
+		<div class="cc-legal-modal__backdrop" data-cc-legal-close></div>
+		<div class="cc-legal-modal__panel" tabindex="-1">
+			<header class="cc-legal-modal__masthead">
+				<p class="cc-legal-modal__eyebrow">CareConcierge Legal</p>
+				<h2 id="cc-legal-modal-title" class="cc-legal-modal__title"></h2>
+				<button type="button" class="cc-legal-modal__close" data-cc-legal-close aria-label="Close legal notice">&times;</button>
+			</header>
+			<div class="cc-legal-modal__body" data-cc-legal-body></div>
+		</div>
+	</div>
+
+	<!-- Source content for each legal document. Hidden until the modal opens. -->
+	<template data-cc-legal-doc="privacy" data-cc-legal-title="Privacy Notice">
+		<p class="cc-legal-doc__meta"><em>Last updated: Monday 4 May 2026</em></p>
+
+		<h3>Overview</h3>
+		<p>CareConcierge Pty Limited (ACN 697 228 783, ABN 79 697 228 783), trading as CareConcierge Health and referred to in this notice as &ldquo;CareConcierge&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo; or &ldquo;our&rdquo;, takes the protection of personal information seriously. This notice explains how we handle personal information in connection with our website at careconcierge.health and our patient communication services for private surgical practices.</p>
+		<p>We act in two distinct capacities, and this notice addresses each separately:</p>
+		<p><strong>As a controller</strong> of personal information about visitors to our website, prospective clients, current and former clients, partners, suppliers, and members of our team. This is the personal information we collect and use for our own business purposes &mdash; marketing, sales, contracting, billing, and operations. The whole of this notice applies.</p>
+		<p><strong>As a processor</strong> of personal information about patients and prospective patients of our clients, in the course of providing our patient communication and enquiry conversion services. In that capacity we process personal information on the documented instructions of our client (the practice), under the terms of the CareConcierge Engagement Order and Service Terms and Conditions and, where applicable, the UK Data Processing Addendum or the US HIPAA / Business Associate Addendum. Patients with questions about how their information is handled in this context should contact the practice they have engaged with directly.</p>
+
+		<h3>Who we are and how to contact us</h3>
+		<p>CareConcierge Pty Limited is an Australian proprietary company registered in Queensland.</p>
+		<p>Postal address: PO Box 944, Paradise Point, Queensland 4216, Australia<br />
+		Email for privacy enquiries: <a href="mailto:care@careconcierge.health">care@careconcierge.health</a><br />
+		Website: careconcierge.health</p>
+		<p>If you are based in the United Kingdom or the European Economic Area, you may also raise concerns with the United Kingdom Information Commissioner&rsquo;s Office (ico.org.uk) or the supervisory authority in your country of residence. If you are based in Australia, you may raise concerns with the Office of the Australian Information Commissioner (oaic.gov.au).</p>
+
+		<h3>Information we collect when you use our website or engage with us</h3>
+		<p>When you visit careconcierge.health, request information, book a discovery call, download a brochure, subscribe to updates, or otherwise interact with us as a prospective or current client, we collect the following categories of information:</p>
+		<p><em>Identity and contact information</em> &mdash; including your name, role, the practice or company you represent, business email address, telephone number, and country.</p>
+		<p><em>Practice and engagement information</em> &mdash; including the number of surgeons in your practice, the number of clinic locations, your estimated monthly enquiry volume, the channels you currently use to communicate with patients, and any further detail you choose to share to help us scope a potential engagement.</p>
+		<p><em>Communication content</em> &mdash; the content of emails, messages, voice notes, meeting notes, and other communications between us.</p>
+		<p><em>Technical information</em> &mdash; your IP address, device type, browser type, operating system, referring site, pages viewed, and the date and time of your visit. This information is collected through standard server logs and analytics tools.</p>
+		<p><em>Cookie and analytics data</em> &mdash; see the Cookies section below.</p>
+		<p>We do not seek sensitive information about you in connection with the website. Please do not send us sensitive information unsolicited.</p>
+
+		<h3>Why we use your information, and the legal bases on which we rely</h3>
+		<p>We use the information described above for the following purposes:</p>
+		<p>To respond to your enquiries and provide the information, brochures, demonstrations, or quotations you have requested. The legal basis is the steps necessary to enter into a contract with you, and our legitimate interest in conducting our business.</p>
+		<p>To assess whether our services are a fit for your practice, to scope an engagement, and to prepare an Engagement Order. The legal basis is the steps necessary to enter into a contract.</p>
+		<p>To deliver the services you have engaged us to provide and to administer the contract between us, including billing, support, reporting, account management, and renewal. The legal basis is the performance of our contract with you.</p>
+		<p>To send you operational communications about our services, including service updates, security notifications, and changes to terms or this notice. The legal basis is performance of our contract with you and our legitimate interest in keeping you properly informed.</p>
+		<p>To send you marketing communications about CareConcierge &mdash; including market briefings, pricing updates, founding cohort announcements, podcast episodes, and articles &mdash; where you have either opted in, are an existing client, or have otherwise indicated interest. You can unsubscribe at any time using the link in any marketing email. The legal basis is your consent (where consent is required) and our legitimate interest in promoting our services to a defined professional audience.</p>
+		<p>To improve the website and our services, and to understand how our content is read and used. The legal basis is our legitimate interest in operating and improving our business.</p>
+		<p>To comply with legal, regulatory, and tax obligations, and to establish, exercise, or defend legal claims. The legal basis is compliance with a legal obligation and our legitimate interest in protecting our position.</p>
+		<p>Where we rely on legitimate interests, we have considered whether those interests are overridden by your rights and freedoms. You can ask for further information on this assessment by contacting us.</p>
+
+		<h3>Who we share your information with</h3>
+		<p>We share personal information only with parties that have a legitimate need to receive it, and on terms that protect it appropriately. The categories are:</p>
+		<p><em>Our service providers and sub-processors</em> &mdash; including our customer relationship and platform provider, our messaging providers (including WhatsApp Business API, SMS gateway, and email delivery), our hosting and workflow automation providers, our analytics, logging, and monitoring providers, our payment processor, our document execution provider, our knowledge base and vector storage provider (where applicable), and our artificial intelligence model provider. Each is engaged under contractual terms that include appropriate data protection obligations.</p>
+		<p><em>Our professional advisers</em> &mdash; including our lawyers, accountants, auditors, and insurers, where reasonably required for the conduct of our business.</p>
+		<p><em>Authorities and regulators</em> &mdash; where we are required by law, regulation, court order, or regulatory request to disclose information, and where we determine in good faith that disclosure is necessary to establish, exercise, or defend legal claims, to comply with our legal obligations, or to protect the rights, property, or safety of our clients, our team, or others.</p>
+		<p><em>A successor in a business transaction</em> &mdash; if our business is reorganised, sold, or merged, we may transfer personal information to the successor entity, subject to appropriate confidentiality protection.</p>
+		<p>We do not sell personal information.</p>
+
+		<h3>International transfers</h3>
+		<p>CareConcierge is established in Australia. Personal information we collect from clients and prospective clients in the United Kingdom, the European Economic Area, the United States, and other jurisdictions is therefore transferred to Australia for processing. We also use sub-processors located in jurisdictions other than your own.</p>
+		<p>For transfers from the United Kingdom or the European Economic Area, we rely on the United Kingdom International Data Transfer Addendum to the European Commission&rsquo;s Standard Contractual Clauses, the European Commission&rsquo;s Standard Contractual Clauses, or another lawful transfer mechanism recognised under applicable data protection law. Further detail on transfers in our processor capacity is set out in the UK Data Processing Addendum.</p>
+		<p>For transfers in connection with the patient communication service in the United States, where the engagement is in scope under the US HIPAA / Business Associate Addendum, processing of Protected Health Information is conducted in a HIPAA-aligned hosting environment in the United States, separate from the default international hosting environment. The HIPAA / Business Associate Addendum sets out the framework that applies.</p>
+
+		<h3>How long we keep your information</h3>
+		<p>We retain personal information for as long as necessary for the purposes for which it was collected, including any retention period required to satisfy legal, regulatory, accounting, or reporting requirements, and for the establishment, exercise, or defence of legal claims. In particular:</p>
+		<p>Sales and prospect records are retained while you remain in active dialogue with us, and for a reasonable period after the dialogue has ended, after which we will delete or de-identify the records unless retention is required by law.</p>
+		<p>Client records are retained for the duration of the engagement and for the period set out in the Engagement Order and Service Terms, after which we will return or delete personal information in accordance with the contract.</p>
+		<p>Marketing records are retained until you unsubscribe or until we determine, on reasonable enquiry, that the contact is no longer current.</p>
+		<p>Records required to satisfy taxation, financial, regulatory, or insurance obligations are retained for the period required by the relevant law or regulation.</p>
+
+		<h3>Your rights</h3>
+		<p>Depending on the jurisdiction in which you are located, you have rights in respect of your personal information. These may include the right to access the personal information we hold about you, to ask for a copy in a portable form, to correct inaccurate information, to ask us to delete information that is no longer needed, to restrict or object to certain processing, and to withdraw any consent on which we rely. Residents of the United Kingdom and the European Economic Area have the rights set out in the UK GDPR and the EU GDPR. Residents of Australia have the rights set out in the Australian Privacy Principles under the Privacy Act 1988 (Cth). Residents of the United States have the rights set out in any applicable state privacy law.</p>
+		<p>To exercise any of these rights, please contact us at <a href="mailto:care@careconcierge.health">care@careconcierge.health</a>. We will respond within the timeframe required by the law that applies to you. We may need to verify your identity before we can act on a request, and there are some grounds on which we can lawfully decline to act on a request &mdash; for example, where the information is required for the establishment, exercise, or defence of legal claims. If we decline, we will tell you why.</p>
+
+		<h3>Cookies and analytics</h3>
+		<p>We use a small number of cookies and similar technologies on careconcierge.health to keep the site working as expected, to remember your preferences, to measure how the site is used, and to support our marketing. We use both first-party cookies set by us and third-party cookies set by our service providers, including our analytics provider.</p>
+		<p>You can control cookies through your browser settings, including by blocking or deleting them. Blocking some cookies may affect how the site functions. Where applicable law requires consent for non-essential cookies, you will be presented with a cookie banner on your first visit and can change your preferences at any time.</p>
+
+		<h3>Security</h3>
+		<p>We implement and maintain technical and organisational measures appropriate to the risks presented by the processing of personal information. Measures include encryption of personal information in transit, role-based access controls, credential management and access logging, secure configuration of hosting infrastructure and sub-processor environments, and periodic review of the effectiveness of our security controls. Detailed measures applicable to client engagements are set out in the Service Terms and the relevant Addendum.</p>
+
+		<h3>Children</h3>
+		<p>CareConcierge does not market to children. Our website and services are directed to surgical practices and the professionals who run them. Where a patient enquiry handled on behalf of a client involves a minor, the practice (as the entity primarily responsible for the patient relationship) is responsible for any consent required from a parent or guardian.</p>
+
+		<h3>Changes to this notice</h3>
+		<p>We may update this notice from time to time to reflect changes in law, our services, or our practice. The current version will always be available on our website, and the date at the top will indicate when it was last updated. Material changes will be communicated to current clients through the channels set out in the Service Terms.</p>
+	</template>
+
+	<template data-cc-legal-doc="terms" data-cc-legal-title="Terms of Service">
+		<p>Our full Terms of Service are available on request and form part of every Engagement Order. To request a copy, please email <a href="mailto:care@careconcierge.health">care@careconcierge.health</a>.</p>
+	</template>
+
+	<template data-cc-legal-doc="dpa" data-cc-legal-title="Data Processing Addendum (UK)">
+		<p>The CareConcierge UK Data Processing Addendum governs our role as a processor of personal data on behalf of UK practice clients, in line with UK GDPR and the UK International Data Transfer Addendum. A current version is provided with every UK Engagement Order. To request a copy, please email <a href="mailto:care@careconcierge.health">care@careconcierge.health</a>.</p>
+	</template>
+
+	<template data-cc-legal-doc="baa" data-cc-legal-title="Business Associate Agreement (US)">
+		<p>The CareConcierge US Business Associate Agreement governs our handling of Protected Health Information for US practice clients in scope under HIPAA. A current version is provided with every US Engagement Order. To request a copy, please email <a href="mailto:care@careconcierge.health">care@careconcierge.health</a>.</p>
+	</template>
 	<!-- /wp:html -->
 </div>
 <!-- /wp:group -->

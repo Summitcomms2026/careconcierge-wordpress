@@ -3,7 +3,7 @@
  * Title: Section 02 — The Hidden Leak (Opportunity)
  * Slug: careconcierge/section-02-opportunity
  * Categories: careconcierge
- * Description: The quiet leak between enquiry and consultation. Editorial text on the left, image placeholder + regulatory credibility panel on the right.
+ * Description: The quiet leak between enquiry and consultation. Editorial text on the left, atmospheric image on the right, integrated regulator credibility strip below.
  * Inserter: yes
  */
 ?>
@@ -11,40 +11,41 @@
 <section id="opportunity" class="wp-block-group cc-section cc-section--opportunity has-ink-blue-color has-soft-cloud-background-color has-text-color has-background">
 	<!-- wp:html -->
 	<div class="cc-opportunity-grid">
-		<div class="cc-opportunity-text cc-reveal">
+		<div class="cc-opportunity-text cc-reveal cc-reveal--from-left">
 			<p class="cc-eyebrow">The Hidden Leak</p>
 			<h2>The most expensive gap in private practice is no longer visibility. It is response.</h2>
 			<p>Private surgeons do not lose every opportunity in public. The real leak is quieter. It happens after hours, between procedures, across inboxes, in hesitant WhatsApp messages, cold web enquiries, half-qualified leads, and patient conversations that never reach the coordinator with enough context to act.</p>
-			<p>Advertising can create demand. It cannot protect it. Once a patient raises their hand, speed, tone, judgement, and follow-through become the commercial difference.</p>
+			<p>Advertising can create demand. It cannot protect it. Once a patient raises their hand, <strong>speed, tone, judgement, and follow-through</strong> become the commercial difference.</p>
 			<p>CareConcierge was built for that gap.</p>
+			<a class="cc-button cc-button--ghost cc-opportunity-text__cta" href="#deck-request">Download deck <span aria-hidden="true">&rarr;</span></a>
 		</div>
-		<div class="cc-opportunity-aside">
-			<?php /* Replace .cc-img-ph with <img src="…" alt="…" class="cc-img cc-img-ph--portrait"> when supplied. Suggested: a tonal architectural / clinic-interior photograph (e.g. supplied via /wp-content/themes/careconcierge/assets/images/placeholders/opportunity.jpg). */ ?>
-			<div class="cc-img-ph cc-img-ph--portrait cc-reveal" role="img" aria-label="Practice atmosphere placeholder — image to follow">
-				<span class="cc-img-ph__caption">Practice atmosphere &mdash; image to follow</span>
-			</div>
-			<aside class="cc-proof-panel cc-reveal" aria-label="Regulatory environments considered">
-				<p class="cc-proof-panel__heading">Built for the regulatory reality of private practice.</p>
-				<div class="cc-proof-row">
-					<span class="cc-proof-row__code">AHPRA</span>
-					<p class="cc-proof-row__name">Australian Health Practitioner Regulation Agency</p>
-				</div>
-				<div class="cc-proof-row">
-					<span class="cc-proof-row__code">GMC</span>
-					<p class="cc-proof-row__name">General Medical Council, United Kingdom</p>
-				</div>
-				<div class="cc-proof-row">
-					<span class="cc-proof-row__code">ASA</span>
-					<p class="cc-proof-row__name">Advertising Standards Authority, United Kingdom</p>
-				</div>
-				<div class="cc-proof-row">
-					<span class="cc-proof-row__code">HIPAA</span>
-					<p class="cc-proof-row__name">Health Insurance Portability and Accountability Act, United States</p>
-				</div>
-				<p class="cc-proof-panel__disclaimer">References indicate regulatory environments considered in deployment; they do not imply endorsement, approval, partnership, certification, or accreditation by these bodies.</p>
-			</aside>
-		</div>
+		<figure class="cc-img cc-img--portrait cc-reveal cc-reveal--from-right">
+			<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/photography/hidden-leak.jpg" alt="A patient lit by a phone screen at night, the moment a serious enquiry sits unanswered" loading="lazy" decoding="async" />
+		</figure>
 	</div>
+
+	<aside class="cc-regulator-strip" aria-label="Regulatory environments considered">
+		<p class="cc-regulator-strip__heading cc-reveal">Built for the regulatory reality of private practice.</p>
+		<ul class="cc-regulator-strip__list cc-reveal-group" role="list">
+			<li class="cc-regulator-strip__item cc-reveal">
+				<img class="cc-regulator-strip__logo" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/regulators/ahpra.png" alt="" loading="lazy" decoding="async" />
+				<span class="cc-regulator-strip__name">AHPRA &middot; Australia</span>
+			</li>
+			<li class="cc-regulator-strip__item cc-reveal">
+				<img class="cc-regulator-strip__logo" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/regulators/gmc.png" alt="" loading="lazy" decoding="async" />
+				<span class="cc-regulator-strip__name">GMC &middot; United Kingdom</span>
+			</li>
+			<li class="cc-regulator-strip__item cc-reveal">
+				<img class="cc-regulator-strip__logo" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/regulators/asa.png" alt="" loading="lazy" decoding="async" />
+				<span class="cc-regulator-strip__name">ASA &middot; United Kingdom</span>
+			</li>
+			<li class="cc-regulator-strip__item cc-reveal">
+				<img class="cc-regulator-strip__logo" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/regulators/hipaa.png" alt="" loading="lazy" decoding="async" />
+				<span class="cc-regulator-strip__name">HIPAA &middot; United States</span>
+			</li>
+		</ul>
+		<p class="cc-regulator-strip__disclaimer cc-reveal">References indicate regulatory environments considered in deployment; they do not imply endorsement, approval, partnership, certification, or accreditation by these bodies.</p>
+	</aside>
 	<!-- /wp:html -->
 </section>
 <!-- /wp:group -->
