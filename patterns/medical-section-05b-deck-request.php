@@ -135,13 +135,12 @@ $cc_deck_nonce = wp_create_nonce( 'cc_deck_request' );
 								</select>
 							</div>
 							<div class="cc-deck-form__field">
-								<label for="cc-deck-market-medical">Country / Market <span class="cc-deck-form__required" aria-hidden="true">*</span></label>
+								<label for="cc-deck-market-medical">Which edition? <span class="cc-deck-form__required" aria-hidden="true">*</span></label>
 								<select id="cc-deck-market-medical" name="market" required>
-									<option value="" disabled selected>Select your market</option>
+									<option value="" disabled selected>Select market edition</option>
 									<option value="AU">Australia</option>
 									<option value="UK">United Kingdom</option>
 									<option value="US">United States</option>
-									<option value="OTHER">Other</option>
 								</select>
 							</div>
 						</div>
@@ -198,10 +197,10 @@ $cc_deck_nonce = wp_create_nonce( 'cc_deck_request' );
 				<div class="cc-deck-form__state cc-deck-form__state--thanks" data-cc-state="thanks" hidden>
 					<header class="cc-deck-form__masthead">
 						<p class="cc-deck-form__label">Delivered</p>
-						<h3 class="cc-deck-form__title">Thank you. The deck is ready.</h3>
+						<h3 class="cc-deck-form__title">Your selected CareConcierge deck is ready.</h3>
 					</header>
 					<div class="cc-deck-form__thanks-body">
-						<p>The private specialist edition for your market is available below.</p>
+						<p>The market edition you chose is available below.</p>
 						<p>Read it as a private-practice briefing, not a software presentation. It sets out where patient intent leaks, why response speed now matters commercially, how CareConcierge protects the early-stage conversation, and what changed inside an established specialist practice.</p>
 						<p>The question is simple: how many serious patients are already reaching your practice, but failing to reach the consultation room?</p>
 					</div>
@@ -215,21 +214,6 @@ $cc_deck_nonce = wp_create_nonce( 'cc_deck_request' );
 					</a>
 
 					<p class="cc-deck-form__microcopy">A 30-minute conversation with the founding team. No obligation. No theatre. Apart from the clinical kind, obviously.</p>
-				</div>
-
-				<!-- Thank-you state — Other market (no auto download) -->
-				<div class="cc-deck-form__state cc-deck-form__state--other" data-cc-state="other" hidden>
-					<header class="cc-deck-form__masthead">
-						<p class="cc-deck-form__label">Received</p>
-						<h3 class="cc-deck-form__title">Thank you. We will send the right edition directly.</h3>
-					</header>
-					<div class="cc-deck-form__thanks-body">
-						<p>Your practice sits outside the three current deck editions, so we will send the most relevant version directly rather than giving you the wrong document with undeserved confidence. Small mercy, but an important one.</p>
-					</div>
-
-					<a class="cc-button cc-button--ghost cc-deck-form__secondary" href="https://calendly.com/greg-careconcierge/30min" target="_blank" rel="noopener">
-						Book a founder briefing <span aria-hidden="true">&rarr;</span>
-					</a>
 				</div>
 			</aside>
 		</div>

@@ -243,10 +243,15 @@
 							var link  = deckCard.querySelector("[data-cc-deck-link]");
 							var label = deckCard.querySelector("[data-cc-deck-label]");
 							if (link)  { link.setAttribute("href", d.deckUrl); }
-							if (label && d.marketLabel) { label.textContent = "Download the " + d.marketLabel + " deck"; }
+							if (label && d.marketLabel) { label.textContent = "Download the " + d.marketLabel + " edition"; }
 							setState("thanks");
 						} else {
-							setState("other");
+							/* The server now rejects unknown markets with a
+							   422 error rather than returning state=other,
+							   so this branch should be unreachable in normal
+							   use. Surfacing the message keeps the user
+							   informed if it ever fires. */
+							setError((d && d.message) || "Submission failed. Please try again.");
 						}
 
 						// Soft scroll to keep the new state in view, but only

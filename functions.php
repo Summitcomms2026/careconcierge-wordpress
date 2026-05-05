@@ -92,34 +92,39 @@ if ( ! function_exists( 'careconcierge_enqueue_assets' ) ) {
 add_action( 'wp_enqueue_scripts', 'careconcierge_enqueue_assets' );
 
 /**
- * Map a market code (AU/UK/US) to its deck PDF URL inside the theme.
- * Returns false for unknown markets (used to drive the "Other" thank-you state).
+ * Map a market code (AU / UK / US) to its region-specific deck PDF URL
+ * inside the theme. Returns false for any value the resolver doesn't
+ * know — the AJAX handler treats false as a hard validation failure
+ * (no Australia-default fallback).
+ *
+ * The same three PDFs serve the surgeons / dentists / medical pages
+ * — they're region editions, not vertical editions.
  */
 if ( ! function_exists( 'careconcierge_deck_url_for_market' ) ) {
 	function careconcierge_deck_url_for_market( $market ) {
 		$map = array(
-			'AU' => 'careconcierge-plastic-surgeons-au.pdf',
-			'UK' => 'careconcierge-plastic-surgeons-uk.pdf',
-			'US' => 'careconcierge-plastic-surgeons-us.pdf',
+			'AU' => 'careconcierge-deck-australia.pdf',
+			'UK' => 'careconcierge-deck-united-kingdom.pdf',
+			'US' => 'careconcierge-deck-united-states.pdf',
 		);
 		$market = strtoupper( (string) $market );
 		if ( ! isset( $map[ $market ] ) ) {
 			return false;
 		}
-		return get_template_directory_uri() . '/assets/documents/' . $map[ $market ];
+		return get_template_directory_uri() . '/assets/downloads/decks/' . $map[ $market ];
 	}
 }
 
 /**
- * Map a market code to its human label (for emails + the dynamic CTA).
+ * Map a market code to its human label (for the email payload + the
+ * dynamic CTA in the thank-you state).
  */
 if ( ! function_exists( 'careconcierge_deck_label_for_market' ) ) {
 	function careconcierge_deck_label_for_market( $market ) {
 		$labels = array(
-			'AU'    => 'Australia',
-			'UK'    => 'United Kingdom',
-			'US'    => 'United States',
-			'OTHER' => 'Other',
+			'AU' => 'Australia',
+			'UK' => 'United Kingdom',
+			'US' => 'United States',
 		);
 		$market = strtoupper( (string) $market );
 		return isset( $labels[ $market ] ) ? $labels[ $market ] : '';
@@ -166,21 +171,33 @@ if ( ! function_exists( 'careconcierge_handle_deck_request' ) ) {
 			wp_send_json_error( array( 'message' => 'Please enter a valid email address.' ), 422 );
 		}
 		$market = strtoupper( $fields['market'] );
-		if ( ! in_array( $market, array( 'AU', 'UK', 'US', 'OTHER' ), true ) ) {
-			wp_send_json_error( array( 'message' => 'Unrecognised market.' ), 422 );
+		if ( ! in_array( $market, array( 'AU', 'UK', 'US' ), true ) ) {
+			/* The form only exposes AU / UK / US. Anything else is
+			   either an outdated cached form or a hand-crafted POST —
+			   reject hard rather than serve a wrong-region deck. */
+			wp_send_json_error( array( 'message' => 'Please choose a market edition.' ), 422 );
 		}
 
 		$market_label = careconcierge_deck_label_for_market( $market );
-		$deck_url     = careconcierge_deck_url_for_market( $market );    // false for OTHER
+		$deck_url     = careconcierge_deck_url_for_market( $market );
+
+		if ( ! $deck_url ) {
+			/* Defensive: the URL resolver should always return a URL
+			   for AU / UK / US given the validation above. If this
+			   branch is hit, something is misconfigured server-side —
+			   refuse rather than fall back to any region's deck. */
+			wp_send_json_error( array( 'message' => 'Deck for the selected edition is not currently available. Please contact us directly.' ), 500 );
+		}
 
 		// ---- Notification to Greg
 		$to_admin      = 'greg@careconcierge.health';
-		$subject_admin = sprintf( 'New CareConcierge deck request — %s', $fields['practice_name'] );
+		$subject_admin = sprintf( 'New CareConcierge deck request — %s — %s', $market_label, $fields['practice_name'] );
 		$lines         = array(
+			'Selected deck edition: '  . $market_label,
+			'',
 			'Full name: '              . $fields['full_name'],
 			'Practice name: '          . $fields['practice_name'],
 			'Role: '                   . $fields['role'],
-			'Country / market: '       . $market_label . ' (' . $market . ')',
 			'Practice website: '       . $fields['practice_website'],
 			'Email: '                  . $fields['email'],
 			'Main enquiry challenge: ' . $fields['challenge'],
@@ -197,23 +214,16 @@ if ( ! function_exists( 'careconcierge_handle_deck_request' ) ) {
 
 		// ---- Optional confirmation to the requester (best-effort).
 		$first_name      = strtok( $fields['full_name'], ' ' );
-		$subject_user    = 'Your CareConcierge plastic surgery deck';
+		$subject_user    = sprintf( 'Your CareConcierge deck — %s edition', $market_label );
 		$user_body_lines = array(
 			'Dear ' . ( $first_name ? $first_name : 'colleague' ) . ',',
 			'',
-			'Thank you for requesting the CareConcierge plastic surgery deck.',
-		);
-		if ( $deck_url ) {
-			$user_body_lines[] = '';
-			$user_body_lines[] = 'You can download the relevant edition (' . $market_label . ') here:';
-			$user_body_lines[] = $deck_url;
-		} else {
-			$user_body_lines[] = '';
-			$user_body_lines[] = 'Your practice sits outside our three current deck editions (Australia, United Kingdom, United States), so we will send the most relevant version directly rather than giving you the wrong document with undeserved confidence.';
-		}
-		$user_body_lines = array_merge( $user_body_lines, array(
+			'Thank you for requesting the CareConcierge deck.',
 			'',
-			'The deck sets out the commercial case for elevated patient communication in private surgical practice — where enquiries are arriving, where serious intent is often lost, how AI-assisted response can stay within approved clinical boundaries, and what changes when every enquiry is captured, qualified and handed over properly.',
+			'You can download the ' . $market_label . ' edition here:',
+			$deck_url,
+			'',
+			'The deck sets out the commercial case for elevated patient communication in private practice — where enquiries are arriving, where serious intent is often lost, how AI-assisted response can stay within approved clinical boundaries, and what changes when every enquiry is captured, qualified and handed over properly.',
 			'',
 			'The deck is best read as a private-practice briefing rather than a software presentation. The central question is simple: how much patient value is already reaching your practice, but failing to reach the consultation room?',
 			'',
@@ -225,16 +235,16 @@ if ( ! function_exists( 'careconcierge_handle_deck_request' ) ) {
 			'Gregory Gray',
 			'Commercial Co-Founder',
 			'CareConcierge',
-		) );
+		);
 		$user_headers = array( 'From: CareConcierge <greg@careconcierge.health>' );
 		wp_mail( $fields['email'], $subject_user, implode( "\r\n", $user_body_lines ), $user_headers );
 
 		// ---- Response to the browser
 		wp_send_json_success( array(
-			'state'       => $deck_url ? 'thanks' : 'other',
+			'state'       => 'thanks',
 			'market'      => $market,
 			'marketLabel' => $market_label,
-			'deckUrl'     => $deck_url ? $deck_url : '',
+			'deckUrl'     => $deck_url,
 			'adminMailed' => (bool) $sent_admin,
 		) );
 	}
