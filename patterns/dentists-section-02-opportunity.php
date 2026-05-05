@@ -3,7 +3,7 @@
  * Title: Dentists — Section 02 The Hidden Leak
  * Slug: careconcierge/dentists-section-02-opportunity
  * Categories: careconcierge
- * Description: Dental & Ortho hidden-leak opportunity. Mirrors the master, with copy adapted from WebCopy_DentalOrtho_Page.docx. The UK regulator slot uses GDC (text-only — no GDC mark asset has been supplied yet); the other three logos are the same.
+ * Description: Dental & Ortho hidden-leak opportunity. Mirrors the master, with copy adapted from WebCopy_DentalOrtho_Page.docx. The UK regulator slot uses the GDC mark; the other three logos are AHPRA, ASA, HIPAA — same treatment as the surgeons master.
  * Inserter: yes
  */
 ?>
@@ -31,8 +31,8 @@
 				<img class="cc-regulator-strip__logo" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/regulators/ahpra.png" alt="" loading="lazy" decoding="async" />
 				<span class="cc-regulator-strip__name">AHPRA &middot; Australia</span>
 			</li>
-			<li class="cc-regulator-strip__item cc-regulator-strip__item--text cc-reveal">
-				<span class="cc-regulator-strip__textmark" aria-hidden="true">GDC</span>
+			<li class="cc-regulator-strip__item cc-reveal">
+				<img class="cc-regulator-strip__logo" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/regulators/gdc.png" alt="" loading="lazy" decoding="async" />
 				<span class="cc-regulator-strip__name">GDC &middot; United Kingdom</span>
 			</li>
 			<li class="cc-regulator-strip__item cc-reveal">
