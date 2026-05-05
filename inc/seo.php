@@ -55,6 +55,12 @@ if ( ! function_exists( 'careconcierge_seo_meta_for_request' ) ) {
 		$surgeons_title       = 'CareConcierge Health | Patient Communication Infrastructure for Private Surgical Practices';
 		$surgeons_description = 'Patient communication infrastructure for private elective practices. Every serious enquiry answered, every lead qualified, every handoff ready before the conversation goes cold.';
 
+		$dentists_title       = 'CareConcierge Health | Patient Communication Infrastructure for Dental and Orthodontic Practices';
+		$dentists_description = 'Patient communication infrastructure for private dental and orthodontic practices. Every serious enquiry answered, every lead qualified, every handoff ready before the conversation goes cold.';
+
+		$medical_title        = 'CareConcierge Health | Patient Communication Infrastructure for Private Specialist Clinics';
+		$medical_description  = 'Patient communication infrastructure for private specialist clinics. Respond faster, qualify patient intent, prepare warmer handoffs, and recover value already sitting inside the practice.';
+
 		switch ( $path ) {
 			case '/surgeons':
 			case '/surgeons/':
@@ -66,11 +72,31 @@ if ( ! function_exists( 'careconcierge_seo_meta_for_request' ) ) {
 					'og_image'      => $default_image,
 					'robots_noindex'=> false,
 				);
+			case '/dentists':
+			case '/dentists/':
+				return array(
+					'title'         => $dentists_title,
+					'description'   => $dentists_description,
+					'canonical'     => CARECONCIERGE_CANONICAL_HOST . '/dentists/',
+					'og_type'       => 'website',
+					'og_image'      => $default_image,
+					'robots_noindex'=> false,
+				);
+			case '/medical':
+			case '/medical/':
+				return array(
+					'title'         => $medical_title,
+					'description'   => $medical_description,
+					'canonical'     => CARECONCIERGE_CANONICAL_HOST . '/medical/',
+					'og_type'       => 'website',
+					'og_image'      => $default_image,
+					'robots_noindex'=> false,
+				);
 			case '/':
 				/* Home renders the surgeons composition as the master page
-				   while only the surgeons vertical is live. Canonicalise
-				   home → /surgeons/ to keep duplicate-content noise out
-				   of search until additional verticals exist. */
+				   while only the surgeons vertical is the public default.
+				   Canonicalise home → /surgeons/ to keep duplicate-content
+				   noise out of search. */
 				return array(
 					'title'         => $surgeons_title,
 					'description'   => $surgeons_description,
@@ -105,7 +131,12 @@ if ( ! function_exists( 'careconcierge_filter_document_title_parts' ) ) {
 		$path = isset( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '/';
 		$path = '/' . trim( (string) $path, '/' );
 
-		if ( in_array( $path, array( '/', '/surgeons', '/surgeons/' ), true ) ) {
+		$governed = array(
+			'/', '/surgeons', '/surgeons/',
+			'/dentists', '/dentists/',
+			'/medical', '/medical/',
+		);
+		if ( in_array( $path, $governed, true ) ) {
 			/* Use the full master title verbatim and suppress the
 			   automatic " — site name" suffix WP would otherwise add. */
 			$parts['title']   = $meta['title'];
@@ -116,13 +147,18 @@ if ( ! function_exists( 'careconcierge_filter_document_title_parts' ) ) {
 }
 add_filter( 'document_title_parts', 'careconcierge_filter_document_title_parts' );
 
-/* Drop the title separator for our governed pages — the master title
-   contains its own " | " so no separator is required. */
+/* Drop the title separator for our governed pages — every governed
+   title contains its own " | " so no separator is required. */
 if ( ! function_exists( 'careconcierge_filter_document_title_separator' ) ) {
 	function careconcierge_filter_document_title_separator( $sep ) {
 		$path = isset( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '/';
 		$path = '/' . trim( (string) $path, '/' );
-		if ( in_array( $path, array( '/', '/surgeons', '/surgeons/' ), true ) ) {
+		$governed = array(
+			'/', '/surgeons', '/surgeons/',
+			'/dentists', '/dentists/',
+			'/medical', '/medical/',
+		);
+		if ( in_array( $path, $governed, true ) ) {
 			return '';
 		}
 		return $sep;
