@@ -64,6 +64,9 @@ if ( ! function_exists( 'careconcierge_seo_meta_for_request' ) ) {
 		$privacy_title        = 'Privacy Notice | CareConcierge Health';
 		$privacy_description  = 'Privacy information for CareConcierge Health, including how enquiries, communications, and business contact information are handled.';
 
+		$terms_title          = 'Terms and Conditions | CareConcierge Health';
+		$terms_description    = 'CareConcierge Health service terms, market-specific addenda, and legal information for Australia, the United Kingdom, and the United States.';
+
 		switch ( $path ) {
 			case '/surgeons':
 			case '/surgeons/':
@@ -103,7 +106,24 @@ if ( ! function_exists( 'careconcierge_seo_meta_for_request' ) ) {
 					'canonical'     => CARECONCIERGE_CANONICAL_HOST . '/privacy-notice/',
 					'og_type'       => 'article',
 					'og_image'      => $default_image,
-					'robots_noindex'=> false,
+					'robots_noindex'=> true,
+					/* Legal pages must remain publicly accessible (DocuSign,
+					   Stripe, email footers, client review) but should not
+					   appear in search indexes. "follow" preserves outbound
+					   link equity to the marketing pages; "noarchive" keeps
+					   cached snapshots out of search results. */
+					'robots'        => 'noindex, follow, noarchive',
+				);
+			case '/terms':
+			case '/terms/':
+				return array(
+					'title'         => $terms_title,
+					'description'   => $terms_description,
+					'canonical'     => CARECONCIERGE_CANONICAL_HOST . '/terms/',
+					'og_type'       => 'article',
+					'og_image'      => $default_image,
+					'robots_noindex'=> true,
+					'robots'        => 'noindex, follow, noarchive',
 				);
 			case '/':
 				/* Home renders the surgeons composition as the master page
@@ -149,6 +169,7 @@ if ( ! function_exists( 'careconcierge_filter_document_title_parts' ) ) {
 			'/dentists', '/dentists/',
 			'/medical', '/medical/',
 			'/privacy-notice', '/privacy-notice/',
+			'/terms', '/terms/',
 		);
 		if ( in_array( $path, $governed, true ) ) {
 			/* Use the full master title verbatim and suppress the
@@ -172,6 +193,7 @@ if ( ! function_exists( 'careconcierge_filter_document_title_separator' ) ) {
 			'/dentists', '/dentists/',
 			'/medical', '/medical/',
 			'/privacy-notice', '/privacy-notice/',
+			'/terms', '/terms/',
 		);
 		if ( in_array( $path, $governed, true ) ) {
 			return '';
@@ -202,7 +224,18 @@ if ( ! function_exists( 'careconcierge_print_meta_tags' ) ) {
 			esc_url( $meta['canonical'] )
 		);
 
-		if ( ! empty( $meta['robots_noindex'] ) ) {
+		/* Robots directive. The optional 'robots' key (when set on a
+		   per-URL basis by careconcierge_seo_meta_for_request) carries
+		   the full directive string verbatim — used for the legal pages
+		   that must remain publicly accessible but not indexed. The
+		   legacy boolean 'robots_noindex' is the fallback for any URL
+		   that just needs the default "noindex,nofollow" treatment. */
+		if ( ! empty( $meta['robots'] ) ) {
+			printf(
+				"<meta name=\"robots\" content=\"%s\" />\n",
+				esc_attr( $meta['robots'] )
+			);
+		} elseif ( ! empty( $meta['robots_noindex'] ) ) {
 			echo "<meta name=\"robots\" content=\"noindex,nofollow\" />\n";
 		}
 
@@ -257,3 +290,83 @@ if ( ! function_exists( 'careconcierge_print_meta_tags' ) ) {
 	}
 }
 add_action( 'wp_head', 'careconcierge_print_meta_tags', 5 );
+
+/**
+ * Pages that should not appear in the WordPress XML sitemap.
+ * Looked up dynamically by slug so the same code works locally
+ * and in production regardless of differing post IDs. Slugs are
+ * the slugs of the WP page records, not URL paths.
+ *
+ * Marketing pages (/, /surgeons/, /dentists/, /medical/) are
+ * intentionally NOT in this list — they remain discoverable.
+ *
+ * @return string[]
+ */
+if ( ! function_exists( 'careconcierge_sitemap_excluded_slugs' ) ) {
+	function careconcierge_sitemap_excluded_slugs() {
+		return array( 'privacy-notice', 'terms' );
+	}
+}
+
+/**
+ * Exclude the legal pages from the core WordPress XML sitemap.
+ *
+ * The pages remain publicly accessible at their canonical URLs
+ * (DocuSign / Stripe / email footers continue to work). They are
+ * just no longer advertised in /wp-sitemap.xml.
+ *
+ * Excluded pages are resolved by slug at request time and folded
+ * into the existing post__not_in argument so any other exclusions
+ * a future filter may add are preserved.
+ *
+ * @param array  $args      Query args passed to WP_Query for the sitemap.
+ * @param string $post_type Post type the sitemap is being built for.
+ * @return array
+ */
+if ( ! function_exists( 'careconcierge_filter_sitemap_query_args' ) ) {
+	function careconcierge_filter_sitemap_query_args( $args, $post_type ) {
+		if ( 'page' !== $post_type ) {
+			return $args;
+		}
+		$excluded_ids = array();
+		foreach ( careconcierge_sitemap_excluded_slugs() as $slug ) {
+			$page = get_page_by_path( $slug, OBJECT, 'page' );
+			if ( $page instanceof WP_Post ) {
+				$excluded_ids[] = $page->ID;
+			}
+		}
+		if ( empty( $excluded_ids ) ) {
+			return $args;
+		}
+		$existing = isset( $args['post__not_in'] ) && is_array( $args['post__not_in'] ) ? $args['post__not_in'] : array();
+		$args['post__not_in'] = array_values( array_unique( array_merge( $existing, $excluded_ids ) ) );
+		return $args;
+	}
+}
+add_filter( 'wp_sitemaps_posts_query_args', 'careconcierge_filter_sitemap_query_args', 10, 2 );
+
+/**
+ * Send X-Robots-Tag for the legal pages only.
+ *
+ * Belt-and-braces reinforcement of the noindex meta tag — DocuSign,
+ * Stripe and other clients that fetch HEAD or follow stricter
+ * indexing rules pick up the directive even before parsing the
+ * <head>. Scope is limited to the two specific paths; no global
+ * application.
+ */
+if ( ! function_exists( 'careconcierge_legal_pages_x_robots_tag' ) ) {
+	function careconcierge_legal_pages_x_robots_tag() {
+		$path = isset( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '/';
+		$path = '/' . trim( (string) $path, '/' );
+		$noindex_paths = array(
+			'/privacy-notice',
+			'/privacy-notice/',
+			'/terms',
+			'/terms/',
+		);
+		if ( in_array( $path, $noindex_paths, true ) && ! headers_sent() ) {
+			header( 'X-Robots-Tag: noindex, follow, noarchive' );
+		}
+	}
+}
+add_action( 'send_headers', 'careconcierge_legal_pages_x_robots_tag' );

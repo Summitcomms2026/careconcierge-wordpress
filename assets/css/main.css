@@ -5242,6 +5242,137 @@ body.cc-legal-open {
 	}
 }
 
+/* ---- Static legal page — extended for /terms/ ----------------
+   The Terms page extends the Privacy Notice scaffolding with a
+   restrained anchor-nav strip, multi-section structure (H2 per
+   anchor, H3 per clause, H4 per addendum sub-clause), and lead /
+   caution paragraphs in the masthead. Sticky-header-aware scroll
+   anchoring is added so jump links land below the fixed header. */
+
+.cc-legal-page__lead {
+	margin: 0.4rem 0 0.6rem !important;
+	font-size: 0.95rem !important;
+	line-height: 1.55 !important;
+	opacity: 1 !important;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-legal-page__caution {
+	margin: 0 !important;
+	font-size: 0.78rem !important;
+	font-style: italic;
+	opacity: 0.78 !important;
+	color: var(--wp--preset--color--ink-blue);
+}
+
+/* On-page navigation strip — sits beneath the masthead. Treated
+   as a small contractual table of contents, not a marketing card. */
+.cc-legal-page__nav {
+	margin: 1.6rem 0 2.4rem;
+	padding: 1rem 1.2rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.10);
+	border-bottom: 1px solid rgba(27, 42, 86, 0.10);
+	background: rgba(27, 42, 86, 0.03);
+}
+.cc-legal-page__nav ol {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem 1.6rem;
+	counter-reset: cc-legal-nav;
+	font-size: 0.78rem;
+	letter-spacing: 0.02em;
+}
+.cc-legal-page__nav li {
+	counter-increment: cc-legal-nav;
+	margin: 0;
+	padding: 0;
+}
+.cc-legal-page__nav li::before {
+	content: counter(cc-legal-nav, decimal-leading-zero);
+	display: inline-block;
+	margin-right: 0.55em;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	color: var(--wp--preset--color--eucalyptus);
+}
+.cc-legal-page__nav a {
+	color: var(--wp--preset--color--ink-blue);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(27, 42, 86, 0.25);
+	padding-bottom: 1px;
+	transition: border-color 180ms ease;
+}
+.cc-legal-page__nav a:hover,
+.cc-legal-page__nav a:focus-visible {
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+	outline: none;
+}
+
+/* Anchor target offset — sticky header is 4rem tall; add 1rem
+   breathing room. WordPress admin bar offset folds in via CSS var. */
+.cc-legal-page__section,
+.cc-legal-page [id] {
+	scroll-margin-top: calc(var(--cc-header-h, 4rem) + var(--cc-admin-h, 0px) + 1rem);
+}
+
+/* Section spacing inside the body — H2 sections are the major
+   navigated headings; visually separated by a hairline. */
+.cc-legal-page__section {
+	margin-top: 2.6rem;
+	padding-top: 1.6rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.10);
+}
+.cc-legal-page__section:first-of-type {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: none;
+}
+.cc-legal-page__section--framing {
+	margin-top: 0.4rem;
+	padding-top: 0;
+	border-top: none;
+}
+
+/* H3 within the legal body — clause-level (e.g. "1. Definitions",
+   "Schedule 1 to the UK DPA"). Slightly smaller and tighter than
+   the H2 section headings. */
+.cc-legal-page__body h3 {
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.92rem;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	margin: 1.6rem 0 0.5rem;
+	color: var(--wp--preset--color--ink-blue);
+}
+/* H4 — sub-clause within an addendum (e.g. UK DPA "1. Interpretation",
+   HIPAA "12. Infrastructure precondition"). One step quieter again. */
+.cc-legal-page__body h4 {
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.85rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	margin: 1.4rem 0 0.45rem;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.92;
+}
+
+@media (max-width: 600px) {
+	.cc-legal-page__nav {
+		padding: 0.85rem 1rem;
+	}
+	.cc-legal-page__nav ol {
+		gap: 0.35rem 1rem;
+	}
+	.cc-legal-page__body h3 {
+		font-size: 0.88rem;
+	}
+	.cc-legal-page__body h4 {
+		font-size: 0.82rem;
+	}
+}
+
 
 /* ----------------------------------------------------------------
    HEADER ALIGNMENT — match the hero panel's outer edges
