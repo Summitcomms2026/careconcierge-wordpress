@@ -61,6 +61,9 @@ if ( ! function_exists( 'careconcierge_seo_meta_for_request' ) ) {
 		$medical_title        = 'CareConcierge Health | Patient Communication Infrastructure for Private Specialist Clinics';
 		$medical_description  = 'Patient communication infrastructure for private specialist clinics. Respond faster, qualify patient intent, prepare warmer handoffs, and recover value already sitting inside the practice.';
 
+		$privacy_title        = 'Privacy Notice | CareConcierge Health';
+		$privacy_description  = 'Privacy information for CareConcierge Health, including how enquiries, communications, and business contact information are handled.';
+
 		switch ( $path ) {
 			case '/surgeons':
 			case '/surgeons/':
@@ -89,6 +92,16 @@ if ( ! function_exists( 'careconcierge_seo_meta_for_request' ) ) {
 					'description'   => $medical_description,
 					'canonical'     => CARECONCIERGE_CANONICAL_HOST . '/medical/',
 					'og_type'       => 'website',
+					'og_image'      => $default_image,
+					'robots_noindex'=> false,
+				);
+			case '/privacy-notice':
+			case '/privacy-notice/':
+				return array(
+					'title'         => $privacy_title,
+					'description'   => $privacy_description,
+					'canonical'     => CARECONCIERGE_CANONICAL_HOST . '/privacy-notice/',
+					'og_type'       => 'article',
 					'og_image'      => $default_image,
 					'robots_noindex'=> false,
 				);
@@ -135,6 +148,7 @@ if ( ! function_exists( 'careconcierge_filter_document_title_parts' ) ) {
 			'/', '/surgeons', '/surgeons/',
 			'/dentists', '/dentists/',
 			'/medical', '/medical/',
+			'/privacy-notice', '/privacy-notice/',
 		);
 		if ( in_array( $path, $governed, true ) ) {
 			/* Use the full master title verbatim and suppress the
@@ -157,6 +171,7 @@ if ( ! function_exists( 'careconcierge_filter_document_title_separator' ) ) {
 			'/', '/surgeons', '/surgeons/',
 			'/dentists', '/dentists/',
 			'/medical', '/medical/',
+			'/privacy-notice', '/privacy-notice/',
 		);
 		if ( in_array( $path, $governed, true ) ) {
 			return '';

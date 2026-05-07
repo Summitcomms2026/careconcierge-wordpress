@@ -5131,6 +5131,117 @@ body.cc-legal-open {
 	}
 }
 
+/* Footer Privacy link rendered as an anchor (not a button) — it now
+   navigates to the standalone /privacy-notice/ page. Match the
+   button siblings exactly so the legal nav reads as one row. */
+.cc-footer__link--anchor {
+	color: inherit;
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition: border-color 180ms ease;
+}
+.cc-footer__link--anchor:hover,
+.cc-footer__link--anchor:focus-visible {
+	border-bottom-color: var(--wp--preset--color--cloud-white);
+	outline: none;
+}
+
+/* ---- Static legal page (Privacy Notice etc.) -----------------
+   Quiet editorial reading column. Soft Cloud bg, Ink Blue text.
+   Typography mirrors .cc-legal-modal__body so the page and the
+   modal feel like the same document family — but laid out as a
+   full-page article rather than a contained panel. The H2 cadence
+   replaces the modal's H3 cadence because this is a real document
+   with its own H1 page title. */
+.cc-section--legal-page,
+.cc-legal-page {
+	padding-top: clamp(2.5rem, 6vw, 5rem);
+	padding-bottom: clamp(3rem, 7vw, 6rem);
+	padding-left: clamp(1.25rem, 5vw, 3rem);
+	padding-right: clamp(1.25rem, 5vw, 3rem);
+}
+.cc-legal-page__inner {
+	max-width: 720px;
+	margin: 0 auto;
+}
+.cc-legal-page__masthead {
+	margin: 0 0 2rem;
+	padding: 0 0 1.4rem;
+	border-bottom: 1px solid rgba(27, 42, 86, 0.10);
+}
+.cc-legal-page__eyebrow {
+	margin: 0 0 0.6rem;
+	font-size: 0.6rem;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	font-weight: 700;
+	color: var(--wp--preset--color--eucalyptus);
+}
+.cc-legal-page__title {
+	margin: 0 0 0.6rem;
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: clamp(1.5rem, 2.6vw, 2rem);
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-legal-page__meta {
+	margin: 0;
+	font-size: 0.78rem;
+	opacity: 0.7;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-legal-page__body {
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-legal-page__body h2 {
+	font-family: var(--wp--preset--font-family--sans);
+	font-size: 0.92rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	margin: 2rem 0 0.6rem;
+	color: var(--wp--preset--color--ink-blue);
+}
+.cc-legal-page__body h2:first-of-type {
+	margin-top: 0.5rem;
+}
+.cc-legal-page__body p {
+	margin: 0 0 0.95rem;
+	font-size: 0.92rem;
+	line-height: 1.65;
+	color: var(--wp--preset--color--ink-blue);
+	opacity: 0.92;
+}
+.cc-legal-page__body a {
+	color: var(--wp--preset--color--ink-blue);
+	border-bottom: 1px solid rgba(27, 42, 86, 0.3);
+	padding-bottom: 1px;
+	text-decoration: none;
+	transition: border-color 180ms ease;
+}
+.cc-legal-page__body a:hover,
+.cc-legal-page__body a:focus-visible {
+	border-bottom-color: var(--wp--preset--color--ink-blue);
+	outline: none;
+}
+.cc-legal-page__contact-coda {
+	margin-top: 2.2rem !important;
+	padding-top: 1.2rem;
+	border-top: 1px solid rgba(27, 42, 86, 0.10);
+	font-size: 0.85rem !important;
+	opacity: 0.85;
+}
+@media (max-width: 600px) {
+	.cc-legal-page__body h2 {
+		font-size: 0.88rem;
+		margin-top: 1.6rem;
+	}
+	.cc-legal-page__body p {
+		font-size: 0.88rem;
+	}
+}
+
 
 /* ----------------------------------------------------------------
    HEADER ALIGNMENT — match the hero panel's outer edges
